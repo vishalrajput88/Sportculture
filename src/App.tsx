@@ -1,3 +1,4 @@
+import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -14,6 +15,11 @@ import SearchResults from './components/SearchResults';
 import TurfList from './pages/TurfList';
 import VenueListing from './pages/VenueListing';
 import VenueDetail from './pages/VenueDetail';
+import AdminLogin from './pages/AdminLogin';
+import AdminSignup from './pages/AdminSignup';
+import AdminDashboard from './pages/AdminDashboard';
+import CustomerLogin from './pages/CustomerLogin';
+import CustomerSignup from './pages/CustomerSignup';
 
 function App() {
   return (
@@ -33,6 +39,11 @@ function App() {
               <Route path="/turfs" element={<TurfList />} />
               <Route path="/venues" element={<VenueListing />} />
               <Route path="/venues/:id" element={<VenueDetail />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin/signup" element={<AdminSignup />} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/login" element={<CustomerLogin />} />
+              <Route path="/signup" element={<CustomerSignup />} />
             </Routes>
           </div>
         </Router>

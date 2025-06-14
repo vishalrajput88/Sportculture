@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 const app = express();
 const port = 3000;
@@ -7,6 +9,206 @@ const port = 3000;
 // Enable CORS for all routes
 app.use(cors());
 app.use(express.json());
+
+// Secret key for JWT
+const JWT_SECRET = 'your-secret-key';
+
+// Store for admin users (in a real app, this would be a database)
+const adminUsers = [];
+
+// Store for customers (in a real app, this would be a database)
+const customers = [];
+
+// Middleware to verify JWT token
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({ message: 'Invalid token' });
+    }
+    req.user = user;
+    next();
+  });
+};
+
+// Admin signup endpoint
+app.post('/api/admin/signup', async (req, res) => {
+  try {
+    const { name, email, password, phone } = req.body;
+
+    // Check if email already exists
+    if (adminUsers.find(user => user.email === email)) {
+      return res.status(400).json({ message: 'Email already registered' });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new admin user
+    const newAdmin = {
+      id: adminUsers.length + 1,
+      name,
+      email,
+      password: hashedPassword,
+      phone,
+    };
+
+    adminUsers.push(newAdmin);
+
+    res.status(201).json({ message: 'Admin user created successfully' });
+  } catch (error) {
+    console.error('Signup error:', error);
+    res.status(500).json({ message: 'Error creating admin user' });
+  }
+});
+
+// Admin login endpoint
+app.post('/api/admin/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find admin user
+    const admin = adminUsers.find(user => user.email === email);
+    if (!admin) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    // Check password
+    const validPassword = await bcrypt.compare(password, admin.password);
+    if (!validPassword) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: admin.id, email: admin.email },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.json({ token });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Error during login' });
+  }
+});
+
+// Customer signup endpoint
+app.post('/api/customers/signup', async (req, res) => {
+  try {
+    const { name, email, password, phone } = req.body;
+
+    // Check if email already exists
+    if (customers.find(user => user.email === email)) {
+      return res.status(400).json({ message: 'Email already registered' });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new customer
+    const newCustomer = {
+      id: customers.length + 1,
+      name,
+      email,
+      password: hashedPassword,
+      phone,
+    };
+
+    customers.push(newCustomer);
+
+    res.status(201).json({ message: 'Customer account created successfully' });
+  } catch (error) {
+    console.error('Signup error:', error);
+    res.status(500).json({ message: 'Error creating customer account' });
+  }
+});
+
+// Customer login endpoint
+app.post('/api/customers/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find customer
+    const customer = customers.find(user => user.email === email);
+    if (!customer) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    // Check password
+    const validPassword = await bcrypt.compare(password, customer.password);
+    if (!validPassword) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: customer.id, email: customer.email },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    // Return token and user data (excluding password)
+    const { password: _, ...userData } = customer;
+    res.json({ token, user: userData });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Error during login' });
+  }
+});
+
+// Get admin's venues
+app.get('/api/admin/venues', authenticateToken, (req, res) => {
+  // In a real app, you would filter venues by admin ID
+  res.json(turfs);
+});
+
+// Add new venue
+app.post('/api/admin/venues', authenticateToken, (req, res) => {
+  const newVenue = {
+    id: turfs.length + 1,
+    ...req.body,
+    rating: 0,
+    images: [
+      `https://images.unsplash.com/photo-1595435934249-5df7ed86e1c${turfs.length + 1}?w=800&auto=format&fit=crop&q=60`,
+      `https://images.unsplash.com/photo-1595435934249-5df7ed86e1c${turfs.length + 2}?w=800&auto=format&fit=crop&q=60`
+    ]
+  };
+  turfs.push(newVenue);
+  res.status(201).json(newVenue);
+});
+
+// Update venue
+app.put('/api/admin/venues/:id', authenticateToken, (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = turfs.findIndex(t => t.id === id);
+  
+  if (index === -1) {
+    return res.status(404).json({ message: 'Venue not found' });
+  }
+
+  turfs[index] = { ...turfs[index], ...req.body };
+  res.json(turfs[index]);
+});
+
+// Delete venue
+app.delete('/api/admin/venues/:id', authenticateToken, (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = turfs.findIndex(t => t.id === id);
+  
+  if (index === -1) {
+    return res.status(404).json({ message: 'Venue not found' });
+  }
+
+  turfs.splice(index, 1);
+  res.status(204).send();
+});
 
 // Dummy turf data
 const turfs = [

@@ -1,8 +1,48 @@
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  IconButton,
+  Menu,
+  MenuItem,
+} from '@mui/material';
+import { AccountCircle } from '@mui/icons-material';
 import styles from './Header.module.css';
 import cultureLogo from '../assets/culture-logo.png';
 
 const Header = () => {
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return localStorage.getItem('customerToken') !== null || localStorage.getItem('adminToken') !== null;
+  });
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('customerToken');
+    localStorage.removeItem('customerData');
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminData');
+    setIsLoggedIn(false);
+    handleClose();
+    navigate('/');
+  };
+
+  const handleProfile = () => {
+    handleClose();
+    if (localStorage.getItem('adminToken')) {
+      navigate('/admin/dashboard');
+    } else {
+      navigate('/profile');
+    }
+  };
+
   return (
     <header className="w-full">
       {/* Top Banner */}
@@ -38,9 +78,52 @@ const Header = () => {
             <option>Ahmadabad</option>
             {/* Add more locations as needed */}
           </select>
-          <Link to="/login" className="bg-[#6a1b9a] text-white px-5 py-2 rounded-md hover:bg-purple-800 hidden md:block font-semibold text-base">
-            Login
-          </Link>
+          
+          {isLoggedIn ? (
+            <>
+              <IconButton
+                size="large"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                color="primary"
+              >
+                <AccountCircle />
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                <MenuItem onClick={handleProfile}>Profile</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              </Menu>
+            </>
+          ) : (
+            <div className="flex items-center space-x-2">
+              <Link to="/login" className="bg-[#6a1b9a] text-white px-5 py-2 rounded-md hover:bg-purple-800 md:block font-semibold text-base">
+                Login
+              </Link>
+              <Link to="/signup" className="bg-[#6a1b9a] text-white px-5 py-2 rounded-md hover:bg-purple-800 md:block font-semibold text-base">
+                Sign Up
+              </Link>
+              <Link to="/admin/login" className="text-[#6a1b9a] hover:text-purple-800 md:block font-semibold text-base">
+                Admin Login
+              </Link>
+            </div>
+          )}
+
           {/* Mobile menu button */}
           <button className="md:hidden text-gray-700 focus:outline-none">
             <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
