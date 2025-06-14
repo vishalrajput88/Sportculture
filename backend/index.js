@@ -26,7 +26,22 @@ const turfs = [
       { date: "2024-03-20", time: "12:00" }
     ],
     facilities: ["Parking", "AC Hall", "Equipment Rental"],
-    location: { lat: 19.0760, lng: 72.8777 }
+    location: { lat: 19.0760, lng: 72.8777 },
+    address: "123 Sports Complex, Andheri West, Mumbai - 400053",
+    description: "State-of-the-art badminton court with professional flooring and lighting. Perfect for both casual players and serious enthusiasts.",
+    contact: {
+      phone: "+91 98765 43210",
+      email: "elitearena@example.com"
+    },
+    openingHours: {
+      "Monday": "6:00 AM - 10:00 PM",
+      "Tuesday": "6:00 AM - 10:00 PM",
+      "Wednesday": "6:00 AM - 10:00 PM",
+      "Thursday": "6:00 AM - 10:00 PM",
+      "Friday": "6:00 AM - 10:00 PM",
+      "Saturday": "6:00 AM - 10:00 PM",
+      "Sunday": "6:00 AM - 10:00 PM"
+    }
   },
   {
     id: 2,
@@ -588,7 +603,7 @@ app.get('/api/turfs/search', (req, res) => {
 // Get turf by ID endpoint
 app.get('/api/turfs/:id', (req, res) => {
   const { id } = req.params;
-  const turf = turfs.find(t => t.id === id);
+  const turf = turfs.find(t => Number(t.id) === Number(id));
 
   if (turf) {
     res.json(turf);

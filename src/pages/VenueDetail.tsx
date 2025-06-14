@@ -66,12 +66,22 @@ const VenueDetail = () => {
     const fetchVenueDetails = async () => {
       try {
         setLoading(true);
+        if (!id) {
+          throw new Error('Venue ID is required');
+        }
         const response = await fetch(`http://localhost:3000/api/turfs/${id}`);
-        if (!response.ok) throw new Error('Failed to fetch venue details');
+        if (!response.ok) {
+          throw new Error(`Failed to fetch venue details: ${response.statusText}`);
+        }
         const data = await response.json();
+        if (!data) {
+          throw new Error('No venue data received');
+        }
         setVenue(data);
+        setError(null);
       } catch (err: any) {
-        setError(err.message);
+        console.error('Error fetching venue details:', err);
+        setError(err.message || 'Failed to fetch venue details');
       } finally {
         setLoading(false);
       }
@@ -134,9 +144,9 @@ const VenueDetail = () => {
         </Box>
       </Box>
 
-      <Grid container spacing={4}>
-        {/* Main Content */}
-        <Grid item xs={12} md={8}>
+      {/* Main Content */}
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
+        <Box sx={{ flex: { md: '2' } }}>
           <Box sx={{ mb: 4 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Typography variant="h4" component="h1">
@@ -176,7 +186,7 @@ const VenueDetail = () => {
           </Box>
 
           {/* Tab Content */}
-          <Box sx={{ mb: 4 }}>
+          <Box>
             {activeTab === 0 && (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                 {venue.facilities.map((facility, index) => (
@@ -201,10 +211,10 @@ const VenueDetail = () => {
               </Box>
             )}
           </Box>
-        </Grid>
+        </Box>
 
         {/* Booking Sidebar */}
-        <Grid item xs={12} md={4}>
+        <Box sx={{ flex: { md: '1' } }}>
           <Paper sx={{ p: 3, position: 'sticky', top: 24 }}>
             <Typography variant="h5" gutterBottom>
               Book Now
@@ -245,18 +255,26 @@ const VenueDetail = () => {
               <Typography variant="subtitle2" gutterBottom>
                 Contact Information
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <Phone sx={{ mr: 1 }} />
-                <Typography variant="body2">{venue.contact.phone}</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Email sx={{ mr: 1 }} />
-                <Typography variant="body2">{venue.contact.email}</Typography>
-              </Box>
+              {venue.contact ? (
+                <>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <Phone sx={{ mr: 1 }} />
+                    <Typography variant="body2">{venue.contact.phone}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Email sx={{ mr: 1 }} />
+                    <Typography variant="body2">{venue.contact.email}</Typography>
+                  </Box>
+                </>
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  Contact information not available
+                </Typography>
+              )}
             </Box>
           </Paper>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Container>
   );
 };
