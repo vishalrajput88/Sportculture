@@ -1,0 +1,609 @@
+const express = require('express');
+const cors = require('cors');
+
+const app = express();
+const port = 3000;
+
+// Enable CORS for all routes
+app.use(cors());
+app.use(express.json());
+
+// Dummy turf data
+const turfs = [
+  {
+    id: 1,
+    name: "Elite Arena Badminton Court",
+    city: "Mumbai",
+    sport: "badminton",
+    price: 800,
+    rating: 4.5,
+    images: [
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c6?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "10:00" },
+      { date: "2024-03-20", time: "12:00" }
+    ],
+    facilities: ["Parking", "AC Hall", "Equipment Rental"],
+    location: { lat: 19.0760, lng: 72.8777 }
+  },
+  {
+    id: 2,
+    name: "Table Tennis Elite Center",
+    city: "Mumbai",
+    sport: "table-tennis",
+    price: 750,
+    rating: 4.6,
+    images: [
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c1?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "15:00" },
+      { date: "2024-03-20", time: "17:00" }
+    ],
+    facilities: ["Parking", "Equipment Rental", "Refreshments"],
+    location: { lat: 19.0760, lng: 72.8777 }
+  },
+  {
+    id: 3,
+    name: "Table Tennis Masters Arena",
+    city: "Delhi",
+    sport: "table-tennis",
+    price: 800,
+    rating: 4.7,
+    images: [
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "16:00" },
+      { date: "2024-03-20", time: "18:00" }
+    ],
+    facilities: ["Parking", "AC Hall", "Equipment Rental"],
+    location: { lat: 28.6139, lng: 77.2090 }
+  },
+  {
+    id: 4,
+    name: "Table Tennis Pro League",
+    city: "Bangalore",
+    sport: "table-tennis",
+    price: 850,
+    rating: 4.8,
+    images: [
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "14:00" },
+      { date: "2024-03-20", time: "16:00" }
+    ],
+    facilities: ["Parking", "Pro Shop", "Refreshments"],
+    location: { lat: 12.9716, lng: 77.5946 }
+  },
+  {
+    id: 5,
+    name: "Basketball Court Pro",
+    city: "Chennai",
+    sport: "basketball",
+    price: 900,
+    rating: 4.4,
+    images: [
+      "https://images.unsplash.com/photo-1546519638-68e109acd27b?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1546519638-68e109acd27b?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "11:00" },
+      { date: "2024-03-20", time: "13:00" }
+    ],
+    facilities: ["Parking", "Floodlights", "Refreshments"],
+    location: { lat: 13.0827, lng: 80.2707 }
+  },
+  {
+    id: 6,
+    name: "Royal Volleyball Court",
+    city: "Delhi",
+    sport: "volleyball",
+    price: 1200,
+    rating: 4.5,
+    images: [
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "17:00" },
+      { date: "2024-03-20", time: "19:00" }
+    ],
+    facilities: ["Parking", "Changing Rooms", "Water Dispenser"],
+    location: { lat: 28.6139, lng: 77.2090 }
+  },
+  {
+    id: 7,
+    name: "Basketball Excellence Center",
+    city: "Bangalore",
+    sport: "basketball",
+    price: 1500,
+    rating: 4.8,
+    images: [
+      "https://images.unsplash.com/photo-1546519638-68e109acd27b?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1546519638-68e109acd27b?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "16:00" },
+      { date: "2024-03-20", time: "18:00" }
+    ],
+    facilities: ["Parking", "Water Dispenser", "First Aid"],
+    location: { lat: 12.9716, lng: 77.5946 }
+  },
+  {
+    id: 8,
+    name: "Table Tennis Pro Hub",
+    city: "Chennai",
+    sport: "table-tennis",
+    price: 600,
+    rating: 4.3,
+    images: [
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "15:00" },
+      { date: "2024-03-20", time: "17:00" }
+    ],
+    facilities: ["Parking", "Equipment Rental", "Refreshments"],
+    location: { lat: 13.0827, lng: 80.2707 }
+  },
+  {
+    id: 9,
+    name: "Tennis Champions Court",
+    city: "Hyderabad",
+    sport: "tennis",
+    price: 2000,
+    rating: 4.9,
+    images: [
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "08:00" },
+      { date: "2024-03-20", time: "10:00" }
+    ],
+    facilities: ["Parking", "Pro Shop", "Restaurant"],
+    location: { lat: 17.3850, lng: 78.4867 }
+  },
+  {
+    id: 10,
+    name: "Pickleball Paradise",
+    city: "Ahmedabad",
+    sport: "pickleball",
+    price: 800,
+    rating: 4.5,
+    address: "Chhipa Bakhal, Main Road Shanti Nagar Jain Colony, Indore, Madhya Pradesh - 452001",
+    images: [
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "09:00" },
+      { date: "2024-03-20", time: "11:00" }
+    ],
+    facilities: ["Parking", "Equipment Rental", "Refreshments"],
+    location: { lat: 23.0225, lng: 72.5714 }
+  },
+  {
+    id: 11,
+    name: "Badminton Masters Arena",
+    city: "Mumbai",
+    sport: "badminton",
+    price: 1000,
+    rating: 4.4,
+    images: [
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "07:00" },
+      { date: "2024-03-20", time: "09:00" }
+    ],
+    facilities: ["Parking", "AC Hall", "Equipment Rental"],
+    location: { lat: 19.0760, lng: 72.8777 }
+  },
+  {
+    id: 12,
+    name: "Volleyball Victory Ground",
+    city: "Delhi",
+    sport: "volleyball",
+    price: 1100,
+    rating: 4.2,
+    images: [
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "17:00" },
+      { date: "2024-03-20", time: "19:00" }
+    ],
+    facilities: ["Parking", "Changing Rooms", "Water Dispenser"],
+    location: { lat: 28.6139, lng: 77.2090 }
+  },
+  {
+    id: 13,
+    name: "Basketball Stars Court",
+    city: "Bangalore",
+    sport: "basketball",
+    price: 1400,
+    rating: 4.7,
+    images: [
+      "https://images.unsplash.com/photo-1546519638-68e109acd27b?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1546519638-68e109acd27b?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "16:00" },
+      { date: "2024-03-20", time: "18:00" }
+    ],
+    facilities: ["Parking", "Water Dispenser", "First Aid"],
+    location: { lat: 12.9716, lng: 77.5946 }
+  },
+  {
+    id: 14,
+    name: "Tennis Grand Slam Court",
+    city: "Hyderabad",
+    sport: "tennis",
+    price: 2500,
+    rating: 4.8,
+    images: [
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "08:00" },
+      { date: "2024-03-20", time: "10:00" }
+    ],
+    facilities: ["Parking", "Pro Shop", "Restaurant"],
+    location: { lat: 17.3850, lng: 78.4867 }
+  },
+  {
+    id: 15,
+    name: "Pickleball Champions",
+    city: "Pune",
+    sport: "pickleball",
+    price: 850,
+    rating: 4.5,
+    images: [
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "09:00" },
+      { date: "2024-03-20", time: "11:00" }
+    ],
+    facilities: ["Parking", "Equipment Rental", "Refreshments"],
+    location: { lat: 18.5204, lng: 73.8567 }
+  },
+  {
+    id: 16,
+    name: "Badminton Elite Center",
+    city: "Mumbai",
+    sport: "badminton",
+    price: 950,
+    rating: 4.3,
+    images: [
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "07:00" },
+      { date: "2024-03-20", time: "09:00" }
+    ],
+    facilities: ["Parking", "AC Hall", "Equipment Rental"],
+    location: { lat: 19.0760, lng: 72.8777 }
+  },
+  {
+    id: 17,
+    name: "Volleyball Elite Arena",
+    city: "Delhi",
+    sport: "volleyball",
+    price: 1300,
+    rating: 4.6,
+    images: [
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "17:00" },
+      { date: "2024-03-20", time: "19:00" }
+    ],
+    facilities: ["Parking", "Changing Rooms", "Water Dispenser"],
+    location: { lat: 28.6139, lng: 77.2090 }
+  },
+  {
+    id: 18,
+    name: "Basketball Pro Court",
+    city: "Bangalore",
+    sport: "basketball",
+    price: 1600,
+    rating: 4.9,
+    images: [
+      "https://images.unsplash.com/photo-1546519638-68e109acd27b?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1546519638-68e109acd27b?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "16:00" },
+      { date: "2024-03-20", time: "18:00" }
+    ],
+    facilities: ["Parking", "Water Dispenser", "First Aid"],
+    location: { lat: 12.9716, lng: 77.5946 }
+  },
+  {
+    id: 19,
+    name: "Tennis Masters Court",
+    city: "Hyderabad",
+    sport: "tennis",
+    price: 2200,
+    rating: 4.7,
+    images: [
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "08:00" },
+      { date: "2024-03-20", time: "10:00" }
+    ],
+    facilities: ["Parking", "Pro Shop", "Restaurant"],
+    location: { lat: 17.3850, lng: 78.4867 }
+  },
+  {
+    id: 20,
+    name: "Pickleball Pro Arena",
+    city: "Pune",
+    sport: "pickleball",
+    price: 950,
+    rating: 4.4,
+    images: [
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "09:00" },
+      { date: "2024-03-20", time: "11:00" }
+    ],
+    facilities: ["Parking", "Equipment Rental", "Refreshments"],
+    location: { lat: 18.5204, lng: 73.8567 }
+  },
+  {
+    id: 21,
+    name: "Badminton Pro Center",
+    city: "Mumbai",
+    sport: "badminton",
+    price: 1100,
+    rating: 4.5,
+    images: [
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "07:00" },
+      { date: "2024-03-20", time: "09:00" }
+    ],
+    facilities: ["Parking", "AC Hall", "Equipment Rental"],
+    location: { lat: 19.0760, lng: 72.8777 }
+  },
+  {
+    id: 22,
+    name: "Volleyball Pro Ground",
+    city: "Delhi",
+    sport: "volleyball",
+    price: 1400,
+    rating: 4.8,
+    images: [
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "17:00" },
+      { date: "2024-03-20", time: "19:00" }
+    ],
+    facilities: ["Parking", "Changing Rooms", "Water Dispenser"],
+    location: { lat: 28.6139, lng: 77.2090 }
+  },
+  {
+    id: 23,
+    name: "Table Tennis Elite",
+    city: "Chennai",
+    sport: "table-tennis",
+    price: 700,
+    rating: 4.1,
+    images: [
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "15:00" },
+      { date: "2024-03-20", time: "17:00" }
+    ],
+    facilities: ["Parking", "Equipment Rental", "Refreshments"],
+    location: { lat: 13.0827, lng: 80.2707 }
+  },
+  {
+    id: 24,
+    name: "Table Tennis Champions Hub",
+    city: "Kolkata",
+    sport: "table-tennis",
+    price: 700,
+    rating: 4.5,
+    images: [
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "13:00" },
+      { date: "2024-03-20", time: "15:00" }
+    ],
+    facilities: ["Parking", "AC Hall", "Pro Shop", "Refreshments"],
+    location: { lat: 22.5726, lng: 88.3639 }
+  },
+  {
+    id: 25,
+    name: "Table Tennis Excellence Center",
+    city: "Ahmedabad",
+    sport: "table-tennis",
+    price: 650,
+    rating: 4.4,
+    images: [
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "14:00" },
+      { date: "2024-03-20", time: "16:00" }
+    ],
+    facilities: ["Parking", "Equipment Rental", "Water Dispenser"],
+    location: { lat: 23.0225, lng: 72.5714 }
+  },
+  {
+    id: 26,
+    name: "Table Tennis Pro League",
+    city: "Pune",
+    sport: "table-tennis",
+    price: 750,
+    rating: 4.6,
+    images: [
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "15:00" },
+      { date: "2024-03-20", time: "17:00" }
+    ],
+    facilities: ["Parking", "AC Hall", "Pro Shop", "Refreshments"],
+    location: { lat: 18.5204, lng: 73.8567 }
+  },
+  {
+    id: 27,
+    name: "Table Tennis Masters Arena",
+    city: "Hyderabad",
+    sport: "table-tennis",
+    price: 800,
+    rating: 4.7,
+    images: [
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "16:00" },
+      { date: "2024-03-20", time: "18:00" }
+    ],
+    facilities: ["Parking", "AC Hall", "Pro Shop", "Restaurant"],
+    location: { lat: 17.3850, lng: 78.4867 }
+  },
+  {
+    id: 28,
+    name: "Table Tennis Elite Center",
+    city: "Chennai",
+    sport: "table-tennis",
+    price: 700,
+    rating: 4.5,
+    images: [
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
+    ],
+    availableSlots: [
+      { date: "2024-03-20", time: "17:00" },
+      { date: "2024-03-20", time: "19:00" }
+    ],
+    facilities: ["Parking", "AC Hall", "Equipment Rental", "Refreshments"],
+    location: { lat: 13.0827, lng: 80.2707 }
+  }
+];
+
+// Update existing venues with proper sport-specific images
+turfs.forEach(turf => {
+  switch(turf.sport) {
+    case 'table-tennis':
+      turf.images = [
+        `https://images.unsplash.com/photo-1595435934249-5df7ed86e1c${turf.id}?w=800&auto=format&fit=crop&q=60`,
+        `https://images.unsplash.com/photo-1595435934249-5df7ed86e1c${turf.id + 1}?w=800&auto=format&fit=crop&q=60`
+      ];
+      break;
+    case 'badminton':
+      turf.images = [
+        `https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c${turf.id}?w=800&auto=format&fit=crop&q=60`,
+        `https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c${turf.id + 1}?w=800&auto=format&fit=crop&q=60`
+      ];
+      break;
+    case 'basketball':
+      turf.images = [
+        `https://images.unsplash.com/photo-1546519638-68e109acd27${turf.id}?w=800&auto=format&fit=crop&q=60`,
+        `https://images.unsplash.com/photo-1546519638-68e109acd27${turf.id + 1}?w=800&auto=format&fit=crop&q=60`
+      ];
+      break;
+    case 'tennis':
+      turf.images = [
+        `https://images.unsplash.com/photo-1595435934249-5df7ed86e1c${turf.id}?w=800&auto=format&fit=crop&q=60`,
+        `https://images.unsplash.com/photo-1595435934249-5df7ed86e1c${turf.id + 1}?w=800&auto=format&fit=crop&q=60`
+      ];
+      break;
+    case 'volleyball':
+      turf.images = [
+        `https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c${turf.id}?w=800&auto=format&fit=crop&q=60`,
+        `https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c${turf.id + 1}?w=800&auto=format&fit=crop&q=60`
+      ];
+      break;
+    case 'pickleball':
+      turf.images = [
+        `https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c${turf.id}?w=800&auto=format&fit=crop&q=60`,
+        `https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c${turf.id + 1}?w=800&auto=format&fit=crop&q=60`
+      ];
+      break;
+  }
+});
+
+// Root API endpoint
+app.get('/api', (req, res) => {
+  res.json({ message: 'Turf Booking API is running' });
+});
+
+// Search turfs endpoint
+app.get('/api/turfs/search', (req, res) => {
+  const { sport, city } = req.query;
+  
+  let filteredTurfs = turfs;
+  
+  if (sport) {
+    filteredTurfs = filteredTurfs.filter(turf => 
+      turf.sport.toLowerCase() === sport.toLowerCase()
+    );
+  }
+
+  if (city) {
+    filteredTurfs = filteredTurfs.filter(turf => 
+      turf.city.toLowerCase() === city.toLowerCase()
+    );
+  }
+  
+  res.json(filteredTurfs);
+});
+
+// Get turf by ID endpoint
+app.get('/api/turfs/:id', (req, res) => {
+  const { id } = req.params;
+  const turf = turfs.find(t => t.id === id);
+
+  if (turf) {
+    res.json(turf);
+  } else {
+    res.status(404).json({ message: 'Turf not found' });
+  }
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something went wrong!' });
+});
+
+// Start the server
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+}); 
