@@ -74,8 +74,8 @@ const Header = () => {
         </div>
 
         {/* Right Section: Location and Login */}
-        <div className="flex items-center space-x-4">
-          <select className="bg-gray-100 p-2 rounded-md border border-gray-300 text-gray-700 text-sm">
+        <div className="d-flex align-items-center gap-3">
+          <select className="bg-gray-100 p-2 rounded-md border-0 text-gray-700 text-sm">
             <option>Ahmadabad</option>
             {/* Add more locations as needed */}
           </select>
@@ -113,7 +113,7 @@ const Header = () => {
             </>
           ) : (
             <div className="flex items-center space-x-2">
-              <Link to="/login" className="bg-[#6a1b9a] text-white px-5 py-2 rounded-md hover:bg-purple-800 md:block font-semibold text-base">
+              <Link to="/login" className="bg-[#fff] border-[#F1A501] border-1 text-[#000] px-5 py-2 rounded-[40px] md:block font-semibold text-base">
                 Login
               </Link>
               {/* <Link to="/signup" className="bg-[#6a1b9a] text-white px-5 py-2 rounded-md hover:bg-purple-800 md:block font-semibold text-base">
