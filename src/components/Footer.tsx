@@ -2,6 +2,11 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Ensure Bootstrap CSS is available
 import { Container, Row, Col } from 'react-bootstrap';
 import cultureLogo from '../assets/culture-logo.png'; // Assuming you have a logo
+import googleplay from  '../assets/google-play.png'; 
+import appstore from  '../assets/app-store.png'; 
+import facebookicon from  '../assets/social-fac.png'; 
+import instaicon from  '../assets/social-insta.png'; 
+import twiticon from  '../assets/social-twit.png'; 
 
 const Footer = () => {
   return (
@@ -12,7 +17,7 @@ const Footer = () => {
           <Col md={3} sm={6} className="mb-4 mb-md-0">
             <div className="d-flex align-items-center mb-3">
               <img src={cultureLogo} alt="Sports Culture Logo" style={{ height: '40px', marginRight: '10px' }} />
-              <h5 className="mb-0">Sports Culture</h5>
+              
             </div>
             <p className="text-muted" style={{ fontSize: '0.9rem' }}>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Urna, tortor tempus.
@@ -51,17 +56,23 @@ const Footer = () => {
 
           {/* Column 5: Social Media and App Download */}
           <Col md={3} sm={12}>
-            <div className="d-flex justify-content-center justify-content-md-end mb-3">
+            <div className="d-flex  mb-3">
               {/* Social Icons - Replace with actual icons/components */}
-              <a href="#" className="btn btn-light rounded-circle d-flex align-items-center justify-content-center mx-2" style={{ width: '40px', height: '40px' }}>F</a>
-              <a href="#" className="btn btn-light rounded-circle d-flex align-items-center justify-content-center mx-2" style={{ width: '40px', height: '40px' }}>I</a>
-              <a href="#" className="btn btn-light rounded-circle d-flex align-items-center justify-content-center mx-2" style={{ width: '40px', height: '40px' }}>T</a>
+              <a href="#" className="">
+                <img src={facebookicon}  alt='facebook'/>
+              </a>
+              <a href="#" className="">
+                <img src={instaicon}  alt='instagram'/>
+                </a>
+              <a href="#" className="">
+              <img src={twiticon}  alt='twiter'/>
+                </a>
             </div>
-            <p className="text-center text-md-end text-muted mb-3">Discover our app</p>
-            <div className="d-flex flex-column flex-md-row justify-content-center justify-content-md-end gap-2">
+            <p className=" text-muted mb-3">Discover our app</p>
+            <div className="d-flex flex-column flex-md-row  gap-2">
               {/* App Store Buttons - Replace with actual images/links */}
-              <a href="#" className="d-block"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/2560px-Google_Play_Store_badge_EN.svg.png" alt="Google Play" style={{ height: '40px' }} /></a>
-              <a href="#" className="d-block"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Download_on_the_App_Store_Badge.svg/1280px-Download_on_the_App_Store_Badge.svg.png" alt="App Store" style={{ height: '40px' }} /></a>
+              <a href="#" className="d-block"><img src={googleplay} alt="Google Play" style={{ height: '40px' }} /></a>
+              <a href="#" className="d-block"><img src={appstore} alt="App Store" style={{ height: '40px' }} /></a>
             </div>
           </Col>
         </Row>

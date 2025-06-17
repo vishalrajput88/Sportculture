@@ -55,7 +55,8 @@ const Header = () => {
       </div>
 
       {/* Main Navigation */}
-      <nav className={`bg-white py-4 px-6 shadow-sm flex justify-between items-center ${styles.nav_container}`}>
+      <div className='container'>
+      <nav className={`bg-white py-4 px-6 flex justify-between items-center ${styles.nav_container}`}>
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
           <img src={cultureLogo} alt="Sports Culture Logo" className="h-8" />
@@ -115,12 +116,12 @@ const Header = () => {
               <Link to="/login" className="bg-[#6a1b9a] text-white px-5 py-2 rounded-md hover:bg-purple-800 md:block font-semibold text-base">
                 Login
               </Link>
-              <Link to="/signup" className="bg-[#6a1b9a] text-white px-5 py-2 rounded-md hover:bg-purple-800 md:block font-semibold text-base">
+              {/* <Link to="/signup" className="bg-[#6a1b9a] text-white px-5 py-2 rounded-md hover:bg-purple-800 md:block font-semibold text-base">
                 Sign Up
               </Link>
               <Link to="/admin/login" className="text-[#6a1b9a] hover:text-purple-800 md:block font-semibold text-base">
                 Admin Login
-              </Link>
+              </Link> */}
             </div>
           )}
 
@@ -132,6 +133,7 @@ const Header = () => {
           </button>
         </div>
       </nav>
+      </div>
     </header>
   );
 };
