@@ -15,6 +15,15 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     return localStorage.getItem('customerToken') !== null || localStorage.getItem('adminToken') !== null;
   });
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [adminData, setAdminData] = useState(() => {
+    const data = localStorage.getItem('adminData');
+    return data ? JSON.parse(data) : null;
+  });
+
+  const handleMobileMenuToggle = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -30,6 +39,7 @@ const Header = () => {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminData');
     setIsLoggedIn(false);
+    setAdminData(null);
     handleClose();
     navigate('/');
   };
@@ -56,83 +66,148 @@ const Header = () => {
 
       {/* Main Navigation */}
       <div className='container'>
-      <nav className={`bg-white py-4 px-6 flex justify-between items-center ${styles.nav_container}`}>
-        {/* Logo */}
-        <Link to="/" className="flex items-center space-x-2">
-          <img src={cultureLogo} alt="Sports Culture Logo" className="h-8" />
-        </Link>
+        {/* Desktop Menu */}
+        <nav className={`bg-white py-4 px-6 flex justify-between items-center ${styles.nav_container}`}>
+          {/* Logo */}
+          <Link to="/" className="flex items-center space-x-2">
+            <img src={cultureLogo} alt="Sports Culture Logo" className="h-8" />
+          </Link>
 
-        {/* Navigation Links */}
-        <div className={styles['nav_menu_container']}>
-          <Link to="/" className="hover:text-[#6a1b9a]">Home</Link>
-          <Link to="/about" className="hover:text-[#6a1b9a]">About us</Link>
-          <Link to="/courts" className="hover:text-[#6a1b9a]">Courts</Link>
-          <Link to="/games" className="hover:text-[#6a1b9a]">Games</Link>
-          <Link to="/volunteer" className="hover:text-[#6a1b9a]">Volunteer</Link>
-          <Link to="/blogs" className="hover:text-[#6a1b9a]">Blogs</Link>
-          <Link to="/contact" className="hover:text-[#6a1b9a]">Contact</Link>
-        </div>
+          {/* Desktop Navigation Links */}
+          <div className={styles['nav_menu_container']}>
+            <Link to="/" className="hover:text-[#6a1b9a]">Home</Link>
+            <Link to="/about" className="hover:text-[#6a1b9a]">About us</Link>
+            <Link to="/courts" className="hover:text-[#6a1b9a]">Courts</Link>
+            <Link to="/games" className="hover:text-[#6a1b9a]">Games</Link>
+            <Link to="/volunteer" className="hover:text-[#6a1b9a]">Volunteer</Link>
+            <Link to="/blogs" className="hover:text-[#6a1b9a]">Blogs</Link>
+            <Link to="/contact" className="hover:text-[#6a1b9a]">Contact</Link>
+          </div>
 
-        {/* Right Section: Location and Login */}
-        <div className="d-flex align-items-center gap-3">
-          <select className="bg-gray-100 p-2 rounded-md border-0 text-gray-700 text-sm">
-            <option>Ahmadabad</option>
-            {/* Add more locations as needed */}
-          </select>
-          
-          {isLoggedIn ? (
-            <>
-              <IconButton
-                size="large"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="primary"
-              >
-                <AccountCircle />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-              >
-                <MenuItem onClick={handleProfile}>Profile</MenuItem>
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
-              </Menu>
-            </>
-          ) : (
-            <div className="flex items-center space-x-2">
-              <Link to="/login" className="bg-[#fff] border-[#F1A501] border-1 text-[#000] px-5 py-2 rounded-[40px] md:block font-semibold text-base">
-                Login
+          {/* Desktop Right Section: Location and Login */}
+          <div className="d-flex align-items-center gap-3">
+            <select className="bg-gray-100 p-2 rounded-md border-0 text-gray-700 text-sm">
+              <option>Ahmadabad</option>
+              {/* Add more locations as needed */}
+            </select>
+            
+            {isLoggedIn ? (
+              <>
+                {adminData && adminData.role === 'superadmin' && (
+                  <Link to="/admin/dashboard" className="text-[#6a1b9a] hover:text-purple-800 md:block font-semibold text-base">
+                    Admin Dashboard
+                  </Link>
+                )}
+                <IconButton
+                  size="large"
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleMenu}
+                  color="primary"
+                >
+                  <AccountCircle />
+                </IconButton>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorEl}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                >
+                  <MenuItem onClick={handleProfile}>Profile</MenuItem>
+                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Link to="/login" className="bg-[#fff] border-[#F1A501] border-1 text-[#000] px-5 py-2 rounded-[40px] font-semibold text-base">
+                  Login
+                </Link>
+              </div>
+            )}
+
+            {/* Mobile Menu Toggle Button */}
+            <button className="md:hidden text-gray-700 focus:outline-none" onClick={handleMobileMenuToggle}>
+              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+            </button>
+          </div>
+        </nav>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden fixed top-0 left-0 w-full h-full bg-white z-50">
+            {/* Mobile Menu Header */}
+            <div className="bg-white shadow-md p-4 flex justify-between items-center">
+              <Link to="/" className="flex items-center space-x-2" onClick={handleMobileMenuToggle}>
+                <img src={cultureLogo} alt="Sports Culture Logo" className="h-8" />
               </Link>
-              {/* <Link to="/signup" className="bg-[#6a1b9a] text-white px-5 py-2 rounded-md hover:bg-purple-800 md:block font-semibold text-base">
-                Sign Up
-              </Link>
-              <Link to="/admin/login" className="text-[#6a1b9a] hover:text-purple-800 md:block font-semibold text-base">
-                Admin Login
-              </Link> */}
+              <button className="text-gray-700 focus:outline-none" onClick={handleMobileMenuToggle}>
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
             </div>
-          )}
 
-          {/* Mobile menu button */}
-          <button className="md:hidden text-gray-700 focus:outline-none">
-            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
-        </div>
-      </nav>
+            {/* Mobile Menu Content */}
+            <div className="flex flex-col p-6">
+              {/* Location Selector */}
+              <div className="mb-6">
+                <select className="w-full bg-gray-100 p-3 rounded-lg border-0 text-gray-700 text-sm">
+                  <option>Ahmadabad</option>
+                  {/* Add more locations as needed */}
+                </select>
+              </div>
+
+              {/* Mobile Navigation Links */}
+              <div className="flex flex-col space-y-4">
+                <Link to="/" className="text-lg font-medium hover:text-[#6a1b9a] py-2 border-b border-gray-100" onClick={handleMobileMenuToggle}>Home</Link>
+                <Link to="/about" className="text-lg font-medium hover:text-[#6a1b9a] py-2 border-b border-gray-100" onClick={handleMobileMenuToggle}>About us</Link>
+                <Link to="/courts" className="text-lg font-medium hover:text-[#6a1b9a] py-2 border-b border-gray-100" onClick={handleMobileMenuToggle}>Courts</Link>
+                <Link to="/games" className="text-lg font-medium hover:text-[#6a1b9a] py-2 border-b border-gray-100" onClick={handleMobileMenuToggle}>Games</Link>
+                <Link to="/volunteer" className="text-lg font-medium hover:text-[#6a1b9a] py-2 border-b border-gray-100" onClick={handleMobileMenuToggle}>Volunteer</Link>
+                <Link to="/blogs" className="text-lg font-medium hover:text-[#6a1b9a] py-2 border-b border-gray-100" onClick={handleMobileMenuToggle}>Blogs</Link>
+                <Link to="/contact" className="text-lg font-medium hover:text-[#6a1b9a] py-2 border-b border-gray-100" onClick={handleMobileMenuToggle}>Contact</Link>
+              </div>
+
+              {/* Mobile Login/Admin Section */}
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                {!isLoggedIn ? (
+                  <Link to="/login" className="block w-full bg-[#fff] border-[#F1A501] border-2 text-[#000] px-5 py-3 rounded-[40px] font-semibold text-base text-center" onClick={handleMobileMenuToggle}>
+                    Login
+                  </Link>
+                ) : (
+                  <>
+                    {adminData && adminData.role === 'superadmin' && (
+                      <Link to="/admin/dashboard" className="block w-full text-[#6a1b9a] hover:text-purple-800 text-lg font-medium py-2 text-center" onClick={handleMobileMenuToggle}>
+                        Admin Dashboard
+                      </Link>
+                    )}
+                    <button 
+                      onClick={() => {
+                        handleLogout();
+                        handleMobileMenuToggle();
+                      }}
+                      className="block w-full text-red-600 hover:text-red-700 text-lg font-medium py-2 text-center mt-2"
+                    >
+                      Logout
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );

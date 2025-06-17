@@ -4,6 +4,8 @@
   overflow: hidden;
   white-space: nowrap; /* Keep all logos on one line */
   box-sizing: border-box;
+  max-width: 1300px;
+  margin: 0 auto;
 }
 
 .logoTrack {
