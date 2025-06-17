@@ -42,3 +42,6 @@
 }
 
 .container { max-width: 1300px; } 
+.venue_grid .MuiPaper-elevation { max-width: 420px; }
+
+

@@ -1,0 +1,30 @@
+/* src/components/LogoSlider.module.css */
+
+.sliderContainer {
+  overflow: hidden;
+  white-space: nowrap; /* Keep all logos on one line */
+  box-sizing: border-box;
+}
+
+.logoTrack {
+  display: inline-block; /* Allows items to be next to each other and scroll */
+  animation: scrollLogos 20s linear infinite; /* Adjust duration for speed */
+}
+
+.logoTrack:hover {
+  animation-play-state: paused; /* Pause on hover */
+}
+
+.logoItem {
+  display: inline-block; /* Make logo images sit next to each other */
+  margin: 0 20px; /* Space between logos */
+  vertical-align: middle;
+  height: 80px; /* Ensure consistent height */
+  object-fit: contain;
+  filter: invert(0) grayscale(2);
+}
+
+@keyframes scrollLogos {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); } /* Scrolls half the track width (one set of logos) */
+} 

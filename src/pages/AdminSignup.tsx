@@ -39,7 +39,7 @@ const AdminSignup = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/admin/signup', {
+      const response = await fetch('/api/users/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,6 +49,7 @@ const AdminSignup = () => {
           email: formData.email,
           password: formData.password,
           phone: formData.phone,
+          role: 'admin',
         }),
       });
 

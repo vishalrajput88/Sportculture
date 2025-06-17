@@ -5,6 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import theme from './theme';
+import './styles/custom.css';
 import Header from './components/Header';
 import Home from './pages/Home';
 import Sports from './pages/Sports';
@@ -28,7 +29,7 @@ function App() {
         <CssBaseline />
         <Router>
           <Header />
-          <div className="container mx-auto px-4 mt-4 mb-4">
+          <div className="">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/sports" element={<Sports />} />

@@ -11,6 +11,69 @@
 }
 
 .heroDescription { font-size: 21px; }
+.easy_des { font-size: 14px; font-weight: 500; line-height: 24px; margin: 0px; }
+.easy_img { background-color: #F5F4F8;
+  max-width: 142px;
+  max-height: 142px;
+  min-height: 142px;
+  min-width: 142px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0px 4px 4px 0px #00000040;
+  justify-content: center;
+  border-radius: 100%; }
+  .easy_container { max-width: 1000px; margin: 0 auto; }
+  .easy_container .grid-cols-4 { gap: 30px;  }
+.easy_box { text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;  }
+  .easy_title { margin: 25px 0px 10px; font-size: 18px; line-height: normal; }
+  .easy_section { position: relative;
+    overflow: hidden;
+    padding: 25px 20px; margin: 40px 0px; }
+    .easy_sec_ti { font-size: 36px; line-height: normal; margin-bottom: 50px; margin-top: 0px; }
+    .sub_heading { font-size: 18px;
+      color: #333;
+      }
+
+.easy_section::before {
+  content: '';
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 200px;
+  height: 220px;
+  background-image: url(/src/assets/left-back-img.png);
+  background-position: top right;
+  background-repeat: no-repeat;
+  background-size: contain;
+  z-index: 0;
+}
+
+.easy_section::after {
+  content: '';
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  width: 200px;
+  height: 220px;
+  background-image: url(/src/assets/right-back-img.png);
+  background-position: top right;
+  background-repeat: no-repeat;
+  background-size: contain;
+  z-index: 0;
+}
+.download_btn button { background: #F1A501;
+  border: none;
+  outline: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600; }
+.download_btn { margin-top: 50px; text-align: center; }
 
 @media (max-width: 768px) {
   .heroSection {
@@ -84,6 +147,60 @@
   padding: 40px 0;
 }
 
+.subscription_box { background-color: #DFD7F9;
+  position: relative;
+  border-radius: 150px 20px 20px 20px;
+  padding: 100px 130px; }
+
+.subscription_box::before {  content: '';
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  width: 300px;
+  height: 357px;
+  background-image: url(/src/assets/sub-mask-left.png);
+  background-position: top right;
+  background-repeat: no-repeat;
+  background-size: contain;
+  z-index: 0;}
+
+  .subscription_box::after { 
+    content: "";
+    position: absolute;
+    top: 0px;
+    width: 522px;
+    left: -106px;
+    height: 600px;
+    background-image: url(/src/assets/sub-mask-right.png);
+    background-position: top right;
+    background-repeat: no-repeat;
+    background-size: contain;
+    z-index: 0;
+  }
+  .subscription_box .sub_des {color: #5E6282;
+    font-size: 36px;
+    font-weight: 500;
+    text-align: center; }
+    .sub_input {border: none;
+      padding: 21px 20px;
+      border-radius: 5px;
+      z-index: 1;
+      min-width: 437px;
+      font-size: 18px;}
+      .sub_btn { font-size: 22px;
+        background: #F1A501;
+        border: none;
+        border-radius: 10px;
+        color: #fff;
+        font-weight: 400;
+        padding: 10px 36px; }
+        .subscription_box .send_img { position: absolute;
+          right: -20px;
+          top: -25px; }
+
+
+          .container { max-width: 1300px; }
+
 @media (max-width: 768px) {
   .featured_venues {
     padding: 30px 0;
@@ -112,7 +229,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
-  max-width: 1200px;
+  max-width: 1300px;
   margin: 0 auto;
 }
 
@@ -168,33 +285,42 @@
 }
 
 .view_details_btn {
-  color: #9333EA;
-  font-weight: 600;
-  font-size: 0.875rem;
-  padding: 0.5rem 1rem;
-  border: 1px solid #9333EA;
-  border-radius: 0.375rem;
+  color: #333;
+  font-weight: 500;
+  padding: 17px 20px;
+  border: 1px solid #D9D9D9;
+  background: transparent;
+  border-radius: 40px;
+  max-width: 178px;
+  font-size: 16px;
+  min-width: 178px;
   transition: all 0.3s ease;
 }
 
 .view_details_btn:hover {
-  color: #7E22CE;
-  border-color: #7E22CE;
+  color: #f1a501;
+  border-color: #f1a501;
+  cursor: pointer;
 }
 
 .book_now_btn {
-  background: #9333EA;
-  color: white;
-  font-weight: 700;
-  font-size: 0.875rem;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  font-weight: 500;
+  border: 1px solid #D9D9D9;
+  color: #333;
+  background: transparent;
+  box-shadow: none;
+  padding: 16px 20px;
+  display: block;
+  border-radius: 40px;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .book_now_btn:hover {
-  background: #7E22CE;
+  color: #f1a501;
+  color: #f1a501;
+  border: 1px solid #f1a501;
 }
 
 /* Tablet view */

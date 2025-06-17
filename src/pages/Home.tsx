@@ -18,7 +18,17 @@ import volleyballIcon from '../assets/Volleyball.png';
 import badmintonIcon from '../assets/Badminton.png';
 import heroBackground from '../assets/hero-section-back-img.png';
 import FilterSection from '../components/FilterSection';
+
+import calendarImage from '../assets/calender.png';
+import buildingimage from '../assets/buildings.png';
+import tenisimage from '../assets/tablet-tenis.png';
+import volleyimage from '../assets/volleyball-home.png';
+import subsendimg from '../assets/sub-send-img.png';
+import LogoSlider from '../components/LogoSlider';
+import sectionbackimage from '../assets/easy_section_back.png';
+import listimage from '../assets/Become-Partner-img.png';
 import { turfApi } from '../services/api';
+
 
 interface Venue {
   id: number;
@@ -77,7 +87,7 @@ const Home = () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         const response = await fetch(`http://localhost:3000/api/turfs/search?sport=pickleball`, {
           method: 'GET',
           headers: {
@@ -115,13 +125,13 @@ const Home = () => {
     // Convert space to hyphen for table tennis
     const selectedSport = sportName === 'table tennis' ? 'table-tennis' : sportName;
     setSelectedSport(selectedSport);
-    
+
     // Immediately fetch venues with the new sport filter
     const fetchVenues = async () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         const response = await fetch(`http://localhost:3000/api/turfs/search?sport=${selectedSport}`, {
           method: 'GET',
           headers: {
@@ -165,7 +175,7 @@ const Home = () => {
       if (filters.city !== 'all') params.append('city', filters.city);
       if (filters.date) params.append('date', filters.date);
       if (filters.time) params.append('time', filters.time);
-      
+
       navigate(`/venues?${params.toString()}`);
     } catch (err) {
       console.error('Search error:', err);
@@ -188,8 +198,8 @@ const Home = () => {
     const fallbackImage = "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60";
 
     return (
-      <Card 
-        sx={{ 
+      <Card
+        sx={{
           maxWidth: 345,
           height: '100%',
           display: 'flex',
@@ -207,7 +217,7 @@ const Home = () => {
           image={imageError ? fallbackImage : venue.images[currentImageIndex]}
           alt={venue.name}
           onError={handleImageError}
-          sx={{ 
+          sx={{
             objectFit: 'cover',
             cursor: 'pointer'
           }}
@@ -241,7 +251,7 @@ const Home = () => {
               Book Your Perfect Turf
             </h1>
             <p className={styles.heroDescription}>
-            Reserve your favorite sports venue in just a few clicks — fast, easy, and reliable.
+              Reserve your favorite sports venue in just a few clicks — fast, easy, and reliable.
             </p>
           </div>
 
@@ -251,10 +261,10 @@ const Home = () => {
 
       {/* Sports Categories Section */}
       <section className={`py-8 sm:py-12 px-4 ${styles.sport_categories}`}>
-        <div className="bg-white shadow-lg rounded-xl mx-auto max-w-6xl px-4">
+        <div >
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs 
-              value={activeCategory} 
+            <Tabs
+              value={activeCategory}
               onChange={handleChange}
               variant="scrollable"
               scrollButtons="auto"
@@ -317,8 +327,8 @@ const Home = () => {
         ) : error ? (
           <div className="text-center py-4">
             <p className="text-red-600 mb-4">{error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
+            <button
+              onClick={() => window.location.reload()}
               className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
             >
               Retry
@@ -327,7 +337,7 @@ const Home = () => {
         ) : venues.length === 0 ? (
           <div className="text-center py-4">
             <p className="text-gray-600">No venues found</p>
-        </div>
+          </div>
         ) : (
           <div className={`${styles.venue_grid} ${styles.venue_slider}`}>
             {venues.map((venue) => (
@@ -336,6 +346,79 @@ const Home = () => {
           </div>
         )}
       </section>
+      <section className={styles.easy_section} >
+        <div className='container'>
+          <div className='text-center'>
+            <p className={styles.sub_heading}>
+              SportsCulture Easy Spot Booking
+            </p>
+            <h2 className={styles.easy_sec_ti}>Easy 4 steps to book your venue</h2>
+          </div>
+          <div className={styles.easy_container}>
+            <div className="grid grid-cols-4 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="p-4 rounded-lg bg-white">
+                <div className={styles.easy_box}>
+                  <div className={styles.easy_img}>
+                    <img src={buildingimage} alt="Calendar"  />
+                  </div>
+                  <h3 className={styles.easy_title}>Select City</h3>
+                  <p className={styles.easy_des}>Select you city or where you are to play your fav sports</p>
+                </div>
+              </div>
+              <div className="p-4 rounded-lg bg-white">
+                <div  className={styles.easy_box}>
+                <div className={styles.easy_img}>
+                  <img src={tenisimage} alt="Calendar" />
+                </div>
+                <h3 className={styles.easy_title}>Select Games</h3>
+                <p className={styles.easy_des}>Select your preferred games to get listing of court and club</p>
+              </div>
+              </div>
+              <div className="p-4 rounded-lg bg-white">
+              <div  className={styles.easy_box}>
+                <div className={styles.easy_img}>
+                  <img src={volleyimage} alt="Calendar" />
+                </div>
+                <h3 className={styles.easy_title}>Choose Academy</h3>
+                <p className={styles.easy_des}>Get list of academy and court and choose as per your convenience</p>
+              </div>
+              </div>
+              <div className="p-4 rounded-lg bg-white">
+              <div  className={styles.easy_box}>
+                <div className={styles.easy_img}>
+                  <img src={calendarImage} alt="Calendar" />
+                </div>
+                <h3 className={styles.easy_title}>Book Slot</h3>
+                <p className={styles.easy_des}>After choosing the destination, book slot & enjoy your sport</p>
+              </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className={`${styles.download_btn} mt-4`}>
+          <button>Download App</button>
+        </div>
+      </section>
+      
+     <section>
+      <LogoSlider />
+     </section>
+
+     <section className='pt-5 pb-5'>
+      <div className='container'>
+          <div className={styles.subscription_box}>
+            <img src= {subsendimg} />
+                <div className={styles.box_content}>
+                    <p className={styles.sub_des}>Subscribe to get information, latest news and other interesting offers about Sports Culture</p>
+                    <div className='d-flex justify-content-center gap-3 mt-5'><input placeholder='Your email'  className={styles.sub_input}/>
+                     <button className={styles.sub_btn}>Subscribe</button> </div>
+                </div>
+          </div>
+
+      </div>
+     </section>
     </div>
   );
 };

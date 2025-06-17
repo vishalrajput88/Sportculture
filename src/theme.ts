@@ -21,6 +21,7 @@ const theme = createTheme({
   },
   components: {
     MuiButton: {
+
       styleOverrides: {
         root: {
           textTransform: 'none', // Prevent all buttons from uppercasing

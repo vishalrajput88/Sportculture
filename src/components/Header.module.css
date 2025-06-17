@@ -22,4 +22,4 @@
 .nav_menu_container { display: flex; align-items: cernter; gap: 20px; }
 .nav_menu_container a { text-decoration: none; }
 
-.nav_container { max-width: 1300px; margin: 0 auto; padding: 15px 0px; }
+.nav_container { padding: 15px 0px; }

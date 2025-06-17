@@ -2,22 +2,22 @@ const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const path = require('path');
+require('dotenv').config();
+const connectDB = require('./config/db');
+const User = require('./models/User');
+const Venue = require('./models/Venue');
+const Booking = require('./models/Booking');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-// Enable CORS for all routes
+// Connect to MongoDB
+connectDB();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
-
-// Secret key for JWT
-const JWT_SECRET = 'your-secret-key';
-
-// Store for admin users (in a real app, this would be a database)
-const adminUsers = [];
-
-// Store for customers (in a real app, this would be a database)
-const customers = [];
 
 // Middleware to verify JWT token
 const authenticateToken = (req, res, next) => {
@@ -37,125 +37,76 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// Admin signup endpoint
-app.post('/api/admin/signup', async (req, res) => {
+// Middleware to check if user is super admin
+const isSuperAdmin = async (req, res, next) => {
   try {
-    const { name, email, password, phone } = req.body;
+    const user = await User.findById(req.user.id);
+    if (!user || user.role !== 'super_admin') {
+      return res.status(403).json({ message: 'Access denied. Super admin only.' });
+    }
+    next();
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// User signup endpoint
+app.post('/api/users/signup', async (req, res) => {
+  try {
+    const { name, email, password, phone, role } = req.body;
 
     // Check if email already exists
-    if (adminUsers.find(user => user.email === email)) {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
       return res.status(400).json({ message: 'Email already registered' });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create new admin user
-    const newAdmin = {
-      id: adminUsers.length + 1,
+    // Create new user
+    const user = new User({
       name,
       email,
-      password: hashedPassword,
+      password,
       phone,
-    };
+      role: role || 'customer'
+    });
 
-    adminUsers.push(newAdmin);
+    await user.save();
 
-    res.status(201).json({ message: 'Admin user created successfully' });
+    res.status(201).json({ message: 'User created successfully' });
   } catch (error) {
     console.error('Signup error:', error);
-    res.status(500).json({ message: 'Error creating admin user' });
+    res.status(500).json({ message: 'Error creating user' });
   }
 });
 
-// Admin login endpoint
-app.post('/api/admin/login', async (req, res) => {
+// User login endpoint
+app.post('/api/users/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find admin user
-    const admin = adminUsers.find(user => user.email === email);
-    if (!admin) {
+    console.log('Login attempt with:', { email, password });
+
+    // Find user
+    const user = await User.findOne({ email });
+    if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     // Check password
-    const validPassword = await bcrypt.compare(password, admin.password);
-    if (!validPassword) {
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: admin.id, email: admin.email },
-      JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-
-    res.json({ token });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ message: 'Error during login' });
-  }
-});
-
-// Customer signup endpoint
-app.post('/api/customers/signup', async (req, res) => {
-  try {
-    const { name, email, password, phone } = req.body;
-
-    // Check if email already exists
-    if (customers.find(user => user.email === email)) {
-      return res.status(400).json({ message: 'Email already registered' });
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create new customer
-    const newCustomer = {
-      id: customers.length + 1,
-      name,
-      email,
-      password: hashedPassword,
-      phone,
-    };
-
-    customers.push(newCustomer);
-
-    res.status(201).json({ message: 'Customer account created successfully' });
-  } catch (error) {
-    console.error('Signup error:', error);
-    res.status(500).json({ message: 'Error creating customer account' });
-  }
-});
-
-// Customer login endpoint
-app.post('/api/customers/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    // Find customer
-    const customer = customers.find(user => user.email === email);
-    if (!customer) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-
-    // Check password
-    const validPassword = await bcrypt.compare(password, customer.password);
-    if (!validPassword) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-
-    // Generate JWT token
-    const token = jwt.sign(
-      { id: customer.id, email: customer.email },
+      { id: user._id, email: user.email, role: user.role },
       JWT_SECRET,
       { expiresIn: '24h' }
     );
 
     // Return token and user data (excluding password)
-    const { password: _, ...userData } = customer;
+    const { password: _, ...userData } = user.toObject();
     res.json({ token, user: userData });
   } catch (error) {
     console.error('Login error:', error);
@@ -163,618 +114,222 @@ app.post('/api/customers/login', async (req, res) => {
   }
 });
 
-// Get admin's venues
-app.get('/api/admin/venues', authenticateToken, (req, res) => {
-  // In a real app, you would filter venues by admin ID
-  res.json(turfs);
-});
-
-// Add new venue
-app.post('/api/admin/venues', authenticateToken, (req, res) => {
-  const newVenue = {
-    id: turfs.length + 1,
-    ...req.body,
-    rating: 0,
-    images: [
-      `https://images.unsplash.com/photo-1595435934249-5df7ed86e1c${turfs.length + 1}?w=800&auto=format&fit=crop&q=60`,
-      `https://images.unsplash.com/photo-1595435934249-5df7ed86e1c${turfs.length + 2}?w=800&auto=format&fit=crop&q=60`
-    ]
-  };
-  turfs.push(newVenue);
-  res.status(201).json(newVenue);
-});
-
-// Update venue
-app.put('/api/admin/venues/:id', authenticateToken, (req, res) => {
-  const id = parseInt(req.params.id);
-  const index = turfs.findIndex(t => t.id === id);
-  
-  if (index === -1) {
-    return res.status(404).json({ message: 'Venue not found' });
+// Get all users (super admin only)
+app.get('/api/users', authenticateToken, isSuperAdmin, async (req, res) => {
+  try {
+    const users = await User.find().select('-password');
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching users' });
   }
-
-  turfs[index] = { ...turfs[index], ...req.body };
-  res.json(turfs[index]);
 });
 
-// Delete venue
-app.delete('/api/admin/venues/:id', authenticateToken, (req, res) => {
-  const id = parseInt(req.params.id);
-  const index = turfs.findIndex(t => t.id === id);
-  
-  if (index === -1) {
-    return res.status(404).json({ message: 'Venue not found' });
-  }
+// Update user role (super admin only)
+app.put('/api/users/:userId/role', authenticateToken, isSuperAdmin, async (req, res) => {
+  try {
+    const { role } = req.body;
+    const user = await User.findByIdAndUpdate(
+      req.params.userId,
+      { role },
+      { new: true }
+    ).select('-password');
 
-  turfs.splice(index, 1);
-  res.status(204).send();
-});
-
-// Dummy turf data
-const turfs = [
-  {
-    id: 1,
-    name: "Elite Arena Badminton Court",
-    city: "Mumbai",
-    sport: "badminton",
-    price: 800,
-    rating: 4.5,
-    images: [
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c6?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "10:00" },
-      { date: "2024-03-20", time: "12:00" }
-    ],
-    facilities: ["Parking", "AC Hall", "Equipment Rental"],
-    location: { lat: 19.0760, lng: 72.8777 },
-    address: "123 Sports Complex, Andheri West, Mumbai - 400053",
-    description: "State-of-the-art badminton court with professional flooring and lighting. Perfect for both casual players and serious enthusiasts.",
-    contact: {
-      phone: "+91 98765 43210",
-      email: "elitearena@example.com"
-    },
-    openingHours: {
-      "Monday": "6:00 AM - 10:00 PM",
-      "Tuesday": "6:00 AM - 10:00 PM",
-      "Wednesday": "6:00 AM - 10:00 PM",
-      "Thursday": "6:00 AM - 10:00 PM",
-      "Friday": "6:00 AM - 10:00 PM",
-      "Saturday": "6:00 AM - 10:00 PM",
-      "Sunday": "6:00 AM - 10:00 PM"
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
-  },
-  {
-    id: 2,
-    name: "Table Tennis Elite Center",
-    city: "Mumbai",
-    sport: "table-tennis",
-    price: 750,
-    rating: 4.6,
-    images: [
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c1?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "15:00" },
-      { date: "2024-03-20", time: "17:00" }
-    ],
-    facilities: ["Parking", "Equipment Rental", "Refreshments"],
-    location: { lat: 19.0760, lng: 72.8777 }
-  },
-  {
-    id: 3,
-    name: "Table Tennis Masters Arena",
-    city: "Delhi",
-    sport: "table-tennis",
-    price: 800,
-    rating: 4.7,
-    images: [
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "16:00" },
-      { date: "2024-03-20", time: "18:00" }
-    ],
-    facilities: ["Parking", "AC Hall", "Equipment Rental"],
-    location: { lat: 28.6139, lng: 77.2090 }
-  },
-  {
-    id: 4,
-    name: "Table Tennis Pro League",
-    city: "Bangalore",
-    sport: "table-tennis",
-    price: 850,
-    rating: 4.8,
-    images: [
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "14:00" },
-      { date: "2024-03-20", time: "16:00" }
-    ],
-    facilities: ["Parking", "Pro Shop", "Refreshments"],
-    location: { lat: 12.9716, lng: 77.5946 }
-  },
-  {
-    id: 5,
-    name: "Basketball Court Pro",
-    city: "Chennai",
-    sport: "basketball",
-    price: 900,
-    rating: 4.4,
-    images: [
-      "https://images.unsplash.com/photo-1546519638-68e109acd27b?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1546519638-68e109acd27b?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "11:00" },
-      { date: "2024-03-20", time: "13:00" }
-    ],
-    facilities: ["Parking", "Floodlights", "Refreshments"],
-    location: { lat: 13.0827, lng: 80.2707 }
-  },
-  {
-    id: 6,
-    name: "Royal Volleyball Court",
-    city: "Delhi",
-    sport: "volleyball",
-    price: 1200,
-    rating: 4.5,
-    images: [
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "17:00" },
-      { date: "2024-03-20", time: "19:00" }
-    ],
-    facilities: ["Parking", "Changing Rooms", "Water Dispenser"],
-    location: { lat: 28.6139, lng: 77.2090 }
-  },
-  {
-    id: 7,
-    name: "Basketball Excellence Center",
-    city: "Bangalore",
-    sport: "basketball",
-    price: 1500,
-    rating: 4.8,
-    images: [
-      "https://images.unsplash.com/photo-1546519638-68e109acd27b?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1546519638-68e109acd27b?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "16:00" },
-      { date: "2024-03-20", time: "18:00" }
-    ],
-    facilities: ["Parking", "Water Dispenser", "First Aid"],
-    location: { lat: 12.9716, lng: 77.5946 }
-  },
-  {
-    id: 8,
-    name: "Table Tennis Pro Hub",
-    city: "Chennai",
-    sport: "table-tennis",
-    price: 600,
-    rating: 4.3,
-    images: [
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "15:00" },
-      { date: "2024-03-20", time: "17:00" }
-    ],
-    facilities: ["Parking", "Equipment Rental", "Refreshments"],
-    location: { lat: 13.0827, lng: 80.2707 }
-  },
-  {
-    id: 9,
-    name: "Tennis Champions Court",
-    city: "Hyderabad",
-    sport: "tennis",
-    price: 2000,
-    rating: 4.9,
-    images: [
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "08:00" },
-      { date: "2024-03-20", time: "10:00" }
-    ],
-    facilities: ["Parking", "Pro Shop", "Restaurant"],
-    location: { lat: 17.3850, lng: 78.4867 }
-  },
-  {
-    id: 10,
-    name: "Pickleball Paradise",
-    city: "Ahmedabad",
-    sport: "pickleball",
-    price: 800,
-    rating: 4.5,
-    address: "Chhipa Bakhal, Main Road Shanti Nagar Jain Colony, Indore, Madhya Pradesh - 452001",
-    images: [
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "09:00" },
-      { date: "2024-03-20", time: "11:00" }
-    ],
-    facilities: ["Parking", "Equipment Rental", "Refreshments"],
-    location: { lat: 23.0225, lng: 72.5714 }
-  },
-  {
-    id: 11,
-    name: "Badminton Masters Arena",
-    city: "Mumbai",
-    sport: "badminton",
-    price: 1000,
-    rating: 4.4,
-    images: [
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "07:00" },
-      { date: "2024-03-20", time: "09:00" }
-    ],
-    facilities: ["Parking", "AC Hall", "Equipment Rental"],
-    location: { lat: 19.0760, lng: 72.8777 }
-  },
-  {
-    id: 12,
-    name: "Volleyball Victory Ground",
-    city: "Delhi",
-    sport: "volleyball",
-    price: 1100,
-    rating: 4.2,
-    images: [
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "17:00" },
-      { date: "2024-03-20", time: "19:00" }
-    ],
-    facilities: ["Parking", "Changing Rooms", "Water Dispenser"],
-    location: { lat: 28.6139, lng: 77.2090 }
-  },
-  {
-    id: 13,
-    name: "Basketball Stars Court",
-    city: "Bangalore",
-    sport: "basketball",
-    price: 1400,
-    rating: 4.7,
-    images: [
-      "https://images.unsplash.com/photo-1546519638-68e109acd27b?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1546519638-68e109acd27b?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "16:00" },
-      { date: "2024-03-20", time: "18:00" }
-    ],
-    facilities: ["Parking", "Water Dispenser", "First Aid"],
-    location: { lat: 12.9716, lng: 77.5946 }
-  },
-  {
-    id: 14,
-    name: "Tennis Grand Slam Court",
-    city: "Hyderabad",
-    sport: "tennis",
-    price: 2500,
-    rating: 4.8,
-    images: [
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "08:00" },
-      { date: "2024-03-20", time: "10:00" }
-    ],
-    facilities: ["Parking", "Pro Shop", "Restaurant"],
-    location: { lat: 17.3850, lng: 78.4867 }
-  },
-  {
-    id: 15,
-    name: "Pickleball Champions",
-    city: "Pune",
-    sport: "pickleball",
-    price: 850,
-    rating: 4.5,
-    images: [
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "09:00" },
-      { date: "2024-03-20", time: "11:00" }
-    ],
-    facilities: ["Parking", "Equipment Rental", "Refreshments"],
-    location: { lat: 18.5204, lng: 73.8567 }
-  },
-  {
-    id: 16,
-    name: "Badminton Elite Center",
-    city: "Mumbai",
-    sport: "badminton",
-    price: 950,
-    rating: 4.3,
-    images: [
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "07:00" },
-      { date: "2024-03-20", time: "09:00" }
-    ],
-    facilities: ["Parking", "AC Hall", "Equipment Rental"],
-    location: { lat: 19.0760, lng: 72.8777 }
-  },
-  {
-    id: 17,
-    name: "Volleyball Elite Arena",
-    city: "Delhi",
-    sport: "volleyball",
-    price: 1300,
-    rating: 4.6,
-    images: [
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "17:00" },
-      { date: "2024-03-20", time: "19:00" }
-    ],
-    facilities: ["Parking", "Changing Rooms", "Water Dispenser"],
-    location: { lat: 28.6139, lng: 77.2090 }
-  },
-  {
-    id: 18,
-    name: "Basketball Pro Court",
-    city: "Bangalore",
-    sport: "basketball",
-    price: 1600,
-    rating: 4.9,
-    images: [
-      "https://images.unsplash.com/photo-1546519638-68e109acd27b?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1546519638-68e109acd27b?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "16:00" },
-      { date: "2024-03-20", time: "18:00" }
-    ],
-    facilities: ["Parking", "Water Dispenser", "First Aid"],
-    location: { lat: 12.9716, lng: 77.5946 }
-  },
-  {
-    id: 19,
-    name: "Tennis Masters Court",
-    city: "Hyderabad",
-    sport: "tennis",
-    price: 2200,
-    rating: 4.7,
-    images: [
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "08:00" },
-      { date: "2024-03-20", time: "10:00" }
-    ],
-    facilities: ["Parking", "Pro Shop", "Restaurant"],
-    location: { lat: 17.3850, lng: 78.4867 }
-  },
-  {
-    id: 20,
-    name: "Pickleball Pro Arena",
-    city: "Pune",
-    sport: "pickleball",
-    price: 950,
-    rating: 4.4,
-    images: [
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "09:00" },
-      { date: "2024-03-20", time: "11:00" }
-    ],
-    facilities: ["Parking", "Equipment Rental", "Refreshments"],
-    location: { lat: 18.5204, lng: 73.8567 }
-  },
-  {
-    id: 21,
-    name: "Badminton Pro Center",
-    city: "Mumbai",
-    sport: "badminton",
-    price: 1100,
-    rating: 4.5,
-    images: [
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "07:00" },
-      { date: "2024-03-20", time: "09:00" }
-    ],
-    facilities: ["Parking", "AC Hall", "Equipment Rental"],
-    location: { lat: 19.0760, lng: 72.8777 }
-  },
-  {
-    id: 22,
-    name: "Volleyball Pro Ground",
-    city: "Delhi",
-    sport: "volleyball",
-    price: 1400,
-    rating: 4.8,
-    images: [
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "17:00" },
-      { date: "2024-03-20", time: "19:00" }
-    ],
-    facilities: ["Parking", "Changing Rooms", "Water Dispenser"],
-    location: { lat: 28.6139, lng: 77.2090 }
-  },
-  {
-    id: 23,
-    name: "Table Tennis Elite",
-    city: "Chennai",
-    sport: "table-tennis",
-    price: 700,
-    rating: 4.1,
-    images: [
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c5?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "15:00" },
-      { date: "2024-03-20", time: "17:00" }
-    ],
-    facilities: ["Parking", "Equipment Rental", "Refreshments"],
-    location: { lat: 13.0827, lng: 80.2707 }
-  },
-  {
-    id: 24,
-    name: "Table Tennis Champions Hub",
-    city: "Kolkata",
-    sport: "table-tennis",
-    price: 700,
-    rating: 4.5,
-    images: [
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "13:00" },
-      { date: "2024-03-20", time: "15:00" }
-    ],
-    facilities: ["Parking", "AC Hall", "Pro Shop", "Refreshments"],
-    location: { lat: 22.5726, lng: 88.3639 }
-  },
-  {
-    id: 25,
-    name: "Table Tennis Excellence Center",
-    city: "Ahmedabad",
-    sport: "table-tennis",
-    price: 650,
-    rating: 4.4,
-    images: [
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "14:00" },
-      { date: "2024-03-20", time: "16:00" }
-    ],
-    facilities: ["Parking", "Equipment Rental", "Water Dispenser"],
-    location: { lat: 23.0225, lng: 72.5714 }
-  },
-  {
-    id: 26,
-    name: "Table Tennis Pro League",
-    city: "Pune",
-    sport: "table-tennis",
-    price: 750,
-    rating: 4.6,
-    images: [
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "15:00" },
-      { date: "2024-03-20", time: "17:00" }
-    ],
-    facilities: ["Parking", "AC Hall", "Pro Shop", "Refreshments"],
-    location: { lat: 18.5204, lng: 73.8567 }
-  },
-  {
-    id: 27,
-    name: "Table Tennis Masters Arena",
-    city: "Hyderabad",
-    sport: "table-tennis",
-    price: 800,
-    rating: 4.7,
-    images: [
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "16:00" },
-      { date: "2024-03-20", time: "18:00" }
-    ],
-    facilities: ["Parking", "AC Hall", "Pro Shop", "Restaurant"],
-    location: { lat: 17.3850, lng: 78.4867 }
-  },
-  {
-    id: 28,
-    name: "Table Tennis Elite Center",
-    city: "Chennai",
-    sport: "table-tennis",
-    price: 700,
-    rating: 4.5,
-    images: [
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60"
-    ],
-    availableSlots: [
-      { date: "2024-03-20", time: "17:00" },
-      { date: "2024-03-20", time: "19:00" }
-    ],
-    facilities: ["Parking", "AC Hall", "Equipment Rental", "Refreshments"],
-    location: { lat: 13.0827, lng: 80.2707 }
-  }
-];
 
-// Update existing venues with proper sport-specific images
-turfs.forEach(turf => {
-  switch(turf.sport) {
-    case 'table-tennis':
-      turf.images = [
-        `https://images.unsplash.com/photo-1595435934249-5df7ed86e1c${turf.id}?w=800&auto=format&fit=crop&q=60`,
-        `https://images.unsplash.com/photo-1595435934249-5df7ed86e1c${turf.id + 1}?w=800&auto=format&fit=crop&q=60`
-      ];
-      break;
-    case 'badminton':
-      turf.images = [
-        `https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c${turf.id}?w=800&auto=format&fit=crop&q=60`,
-        `https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c${turf.id + 1}?w=800&auto=format&fit=crop&q=60`
-      ];
-      break;
-    case 'basketball':
-      turf.images = [
-        `https://images.unsplash.com/photo-1546519638-68e109acd27${turf.id}?w=800&auto=format&fit=crop&q=60`,
-        `https://images.unsplash.com/photo-1546519638-68e109acd27${turf.id + 1}?w=800&auto=format&fit=crop&q=60`
-      ];
-      break;
-    case 'tennis':
-      turf.images = [
-        `https://images.unsplash.com/photo-1595435934249-5df7ed86e1c${turf.id}?w=800&auto=format&fit=crop&q=60`,
-        `https://images.unsplash.com/photo-1595435934249-5df7ed86e1c${turf.id + 1}?w=800&auto=format&fit=crop&q=60`
-      ];
-      break;
-    case 'volleyball':
-      turf.images = [
-        `https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c${turf.id}?w=800&auto=format&fit=crop&q=60`,
-        `https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c${turf.id + 1}?w=800&auto=format&fit=crop&q=60`
-      ];
-      break;
-    case 'pickleball':
-      turf.images = [
-        `https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c${turf.id}?w=800&auto=format&fit=crop&q=60`,
-        `https://images.unsplash.com/photo-1613918435762-b7b3f7b5c5c${turf.id + 1}?w=800&auto=format&fit=crop&q=60`
-      ];
-      break;
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating user role' });
   }
 });
+
+// Venue endpoints
+app.post('/api/venues', authenticateToken, async (req, res) => {
+  try {
+    const venue = new Venue({
+      ...req.body,
+      owner: req.user.id
+    });
+    await venue.save();
+    res.status(201).json(venue);
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating venue' });
+  }
+});
+
+app.get('/api/venues', async (req, res) => {
+  try {
+    const venues = await Venue.find().populate('owner', 'name email');
+    res.json(venues);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching venues' });
+  }
+});
+
+app.get('/api/venues/:id', async (req, res) => {
+  try {
+    const venue = await Venue.findById(req.params.id).populate('owner', 'name email');
+    if (!venue) {
+      return res.status(404).json({ message: 'Venue not found' });
+    }
+    res.json(venue);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching venue' });
+  }
+});
+
+app.put('/api/venues/:id', authenticateToken, async (req, res) => {
+  try {
+    const venue = await Venue.findById(req.params.id);
+    if (!venue) {
+      return res.status(404).json({ message: 'Venue not found' });
+    }
+
+    // Check if user is the owner or super admin
+    const user = await User.findById(req.user.id);
+    if (venue.owner.toString() !== req.user.id && user.role !== 'super_admin') {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    const updatedVenue = await Venue.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    ).populate('owner', 'name email');
+
+    res.json(updatedVenue);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating venue' });
+  }
+});
+
+app.delete('/api/venues/:id', authenticateToken, async (req, res) => {
+  try {
+    const venue = await Venue.findById(req.params.id);
+    if (!venue) {
+      return res.status(404).json({ message: 'Venue not found' });
+    }
+
+    // Check if user is the owner or super admin
+    const user = await User.findById(req.user.id);
+    if (venue.owner.toString() !== req.user.id && user.role !== 'super_admin') {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    await venue.remove();
+    res.json({ message: 'Venue deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting venue' });
+  }
+});
+
+// Booking endpoints
+app.post('/api/bookings', authenticateToken, async (req, res) => {
+  try {
+    const { venueId, date, startTime, endTime } = req.body;
+
+    // Check if venue exists
+    const venue = await Venue.findById(venueId);
+    if (!venue) {
+    return res.status(404).json({ message: 'Venue not found' });
+  }
+
+    // Check if the time slot is available
+    const existingBooking = await Booking.findOne({
+      venue: venueId,
+      date,
+      startTime,
+      endTime,
+      status: { $in: ['pending', 'confirmed'] }
+    });
+
+    if (existingBooking) {
+      return res.status(400).json({ message: 'This time slot is already booked' });
+    }
+
+    // Calculate total price (you can implement your own pricing logic)
+    const totalPrice = venue.price;
+
+    // Create booking
+    const booking = new Booking({
+      venue: venueId,
+      user: req.user.id,
+      date,
+      startTime,
+      endTime,
+      totalPrice
+    });
+
+    await booking.save();
+
+    res.status(201).json(booking);
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating booking' });
+  }
+});
+
+app.get('/api/bookings', authenticateToken, async (req, res) => {
+  try {
+    const bookings = await Booking.find({ user: req.user.id })
+      .populate('venue', 'name city sport price')
+      .sort({ date: -1, startTime: -1 });
+    res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching bookings' });
+  }
+});
+
+app.get('/api/bookings/:id', authenticateToken, async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id)
+      .populate('venue', 'name city sport price')
+      .populate('user', 'name email phone');
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    // Check if user is authorized to view this booking
+    if (booking.user._id.toString() !== req.user.id) {
+      const user = await User.findById(req.user.id);
+      if (user.role !== 'admin' && user.role !== 'super_admin') {
+        return res.status(403).json({ message: 'Not authorized' });
+      }
+    }
+
+    res.json(booking);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching booking' });
+  }
+});
+
+app.put('/api/bookings/:id/status', authenticateToken, async (req, res) => {
+  try {
+    const { status } = req.body;
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    // Check if user is authorized to update this booking
+    const user = await User.findById(req.user.id);
+    if (booking.user.toString() !== req.user.id && user.role !== 'admin' && user.role !== 'super_admin') {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    booking.status = status;
+    await booking.save();
+
+    res.json(booking);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating booking status' });
+  }
+});
+
+// Serve static files from the public directory (moved to the end)
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Root API endpoint
 app.get('/api', (req, res) => {
@@ -782,35 +337,37 @@ app.get('/api', (req, res) => {
 });
 
 // Search turfs endpoint
-app.get('/api/turfs/search', (req, res) => {
+app.get('/api/turfs/search', async (req, res) => {
+  try {
   const { sport, city } = req.query;
-  
-  let filteredTurfs = turfs;
+    let query = {};
   
   if (sport) {
-    filteredTurfs = filteredTurfs.filter(turf => 
-      turf.sport.toLowerCase() === sport.toLowerCase()
-    );
+      query.sport = new RegExp(sport, 'i'); // Case-insensitive search
   }
-
   if (city) {
-    filteredTurfs = filteredTurfs.filter(turf => 
-      turf.city.toLowerCase() === city.toLowerCase()
-    );
+      query.city = new RegExp(city, 'i'); // Case-insensitive search
+    }
+
+    const venues = await Venue.find(query).populate('owner', 'name email');
+    res.json(venues);
+  } catch (error) {
+    console.error('Error searching turfs:', error);
+    res.status(500).json({ message: 'Error searching turfs' });
   }
-  
-  res.json(filteredTurfs);
 });
 
 // Get turf by ID endpoint
-app.get('/api/turfs/:id', (req, res) => {
-  const { id } = req.params;
-  const turf = turfs.find(t => Number(t.id) === Number(id));
-
-  if (turf) {
-    res.json(turf);
-  } else {
-    res.status(404).json({ message: 'Turf not found' });
+app.get('/api/turfs/:id', async (req, res) => {
+  try {
+    const venue = await Venue.findById(req.params.id).populate('owner', 'name email');
+    if (!venue) {
+      return res.status(404).json({ message: 'Turf not found' });
+    }
+    res.json(venue);
+  } catch (error) {
+    console.error('Error fetching turf by ID:', error);
+    res.status(500).json({ message: 'Error fetching turf' });
   }
 });
 
@@ -822,5 +379,5 @@ app.use((err, req, res, next) => {
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server is running on port ${port}`);
 }); 
