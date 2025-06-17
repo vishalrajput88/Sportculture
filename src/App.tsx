@@ -21,6 +21,7 @@ import AdminSignup from './pages/AdminSignup';
 import AdminDashboard from './pages/AdminDashboard';
 import CustomerLogin from './pages/CustomerLogin';
 import CustomerSignup from './pages/CustomerSignup';
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
               <Route path="/signup" element={<CustomerSignup />} />
             </Routes>
           </div>
+          <Footer />
         </Router>
       </LocalizationProvider>
     </ThemeProvider>

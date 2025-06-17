@@ -409,7 +409,7 @@ const Home = () => {
      <section className='pt-5 pb-5'>
       <div className='container'>
           <div className={styles.subscription_box}>
-            <img src= {subsendimg} />
+            <img src= {subsendimg} className={styles.send_img} />
                 <div className={styles.box_content}>
                     <p className={styles.sub_des}>Subscribe to get information, latest news and other interesting offers about Sports Culture</p>
                     <div className='d-flex justify-content-center gap-3 mt-5'><input placeholder='Your email'  className={styles.sub_input}/>
