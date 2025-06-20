@@ -24,6 +24,7 @@ import buildingimage from '../assets/buildings.png';
 import tenisimage from '../assets/tablet-tenis.png';
 import volleyimage from '../assets/volleyball-home.png';
 import subsendimg from '../assets/sub-send-img.png';
+import eyeicon from '../assets/eye-icon.svg';
 import LogoSlider from '../components/LogoSlider';
 import sectionbackimage from '../assets/easy_section_back.png';
 import listimage from '../assets/Become-Partner-img.png';
@@ -229,7 +230,8 @@ const Home = () => {
           <p className={styles.venue_location}>{venue.city}</p>
           <div className={styles.venue_actions}>
             <button className={styles.view_details_btn} onClick={handleViewDetails}>
-              View Details
+            <i class='fa-solid fa-eye'></i> View Details
+            
             </button>
             <button className={styles.book_now_btn}>
               Book Now

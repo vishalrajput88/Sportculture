@@ -52,65 +52,56 @@ const isSuperAdmin = async (req, res, next) => {
 
 // User signup endpoint
 app.post('/api/users/signup', async (req, res) => {
-  try {
-    const { name, email, password, phone, role } = req.body;
-
-    // Check if email already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'Email already registered' });
-    }
-
-    // Create new user
-    const user = new User({
-      name,
-      email,
-      password,
-      phone,
-      role: role || 'customer'
-    });
-
-    await user.save();
-
-    res.status(201).json({ message: 'User created successfully' });
-  } catch (error) {
-    console.error('Signup error:', error);
-    res.status(500).json({ message: 'Error creating user' });
-  }
+  // --- STATIC RESPONSE ---
+  // const { name, email, password, phone, role } = req.body;
+  // const existingUser = await User.findOne({ email });
+  // if (existingUser) {
+  //   return res.status(400).json({ message: 'Email already registered' });
+  // }
+  // const user = new User({ name, email, password, phone, role: role || 'customer' });
+  // await user.save();
+  // res.status(201).json({ message: 'User created successfully' });
+  res.status(201).json({ message: 'User created successfully (static)' });
 });
 
 // User login endpoint
 app.post('/api/users/login', async (req, res) => {
-  try {
+  // --- STATIC RESPONSE ---
+  // const { email, password } = req.body;
+  // console.log('Login attempt with:', { email, password });
+  // const user = await User.findOne({ email });
+  // if (!user) {
+  //   return res.status(401).json({ message: 'Invalid credentials' });
+  // }
+  // const isMatch = await user.comparePassword(password);
+  // if (!isMatch) {
+  //   return res.status(401).json({ message: 'Invalid credentials' });
+  // }
+  // const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '24h' });
+  // const { password: _, ...userData } = user.toObject();
+  // res.json({ token, user: userData });
+
     const { email, password } = req.body;
-
-    console.log('Login attempt with:', { email, password });
-
-    // Find user
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-
-    // Check password
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-
-    // Generate JWT token
+  // Hardcoded admin user
+  if (
+    (email === 'admin@example.com' && password === 'admin123') ||
+    (email === 'superadmin@example.com' && password === 'admin123')
+  ) {
+    const user = {
+      _id: '1',
+      name: email === 'admin@example.com' ? 'Admin User' : 'Super Admin',
+      email,
+      role: email === 'admin@example.com' ? 'admin' : 'super_admin',
+      phone: email === 'admin@example.com' ? '9876543210' : '1234567890',
+    };
     const token = jwt.sign(
       { id: user._id, email: user.email, role: user.role },
-      JWT_SECRET,
+      process.env.JWT_SECRET || 'staticsecret',
       { expiresIn: '24h' }
     );
-
-    // Return token and user data (excluding password)
-    const { password: _, ...userData } = user.toObject();
-    res.json({ token, user: userData });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ message: 'Error during login' });
+    res.json({ token, user });
+  } else {
+    res.status(401).json({ message: 'Invalid credentials (static)' });
   }
 });
 
@@ -144,84 +135,195 @@ app.put('/api/users/:userId/role', authenticateToken, isSuperAdmin, async (req, 
   }
 });
 
-// Venue endpoints
-app.post('/api/venues', authenticateToken, async (req, res) => {
-  try {
-    const venue = new Venue({
-      ...req.body,
-      owner: req.user.id
-    });
-    await venue.save();
-    res.status(201).json(venue);
-  } catch (error) {
-    res.status(500).json({ message: 'Error creating venue' });
+// --- STATIC VENUE DATA ---
+const staticVenues = [
+  {
+    id: '1',
+    name: 'Elite Arena Badminton Court',
+    description: 'State-of-the-art badminton court with professional flooring and lighting.',
+    city: 'Mumbai',
+    sport: 'badminton',
+    price: 800,
+    rating: 4.5,
+    images: [
+      '/public/assets/Badminton.png',
+      '/public/assets/buildings.png'
+    ],
+    facilities: ['Parking', 'AC Hall', 'Equipment Rental'],
+    address: '123 Sports Complex, Andheri West, Mumbai - 400053',
+    contact: { phone: '+91 98765 43210', email: 'elitearena@example.com' },
+    openingHours: {
+      Monday: '6:00 AM - 10:00 PM',
+      Tuesday: '6:00 AM - 10:00 PM',
+      Wednesday: '6:00 AM - 10:00 PM',
+      Thursday: '6:00 AM - 10:00 PM',
+      Friday: '6:00 AM - 10:00 PM',
+      Saturday: '6:00 AM - 10:00 PM',
+      Sunday: '6:00 AM - 10:00 PM'
+    },
+    owner: '1'
+  },
+  {
+    id: '2',
+    name: 'Grand Slam Tennis Court',
+    description: 'Premium tennis court with clay and hard surfaces.',
+    city: 'Pune',
+    sport: 'tennis',
+    price: 1000,
+    rating: 4.7,
+    images: [
+      '/public/assets/Tennis.png',
+      '/public/assets/hero-section-back-img.png'
+    ],
+    facilities: ['Parking', 'Refreshments', 'Locker Room'],
+    address: '456 Tennis Avenue, Koregaon Park, Pune - 411001',
+    contact: { phone: '+91 98765 43211', email: 'grandslam@example.com' },
+    openingHours: {
+      Monday: '7:00 AM - 9:00 PM',
+      Tuesday: '7:00 AM - 9:00 PM',
+      Wednesday: '7:00 AM - 9:00 PM',
+      Thursday: '7:00 AM - 9:00 PM',
+      Friday: '7:00 AM - 9:00 PM',
+      Saturday: '7:00 AM - 9:00 PM',
+      Sunday: '7:00 AM - 9:00 PM'
+    },
+    owner: '1'
+  },
+  {
+    id: '3',
+    name: 'Basketball Elite Court',
+    description: 'Professional basketball court with NBA standard flooring.',
+    city: 'Bangalore',
+    sport: 'basketball',
+    price: 1200,
+    rating: 4.8,
+    images: [
+      '/public/assets/Basketball.png',
+      '/public/assets/volleyball-home.png'
+    ],
+    facilities: ['Parking', 'Floodlights', 'Refreshments'],
+    address: '789 Sports Complex, Koramangala, Bangalore - 560034',
+    contact: { phone: '+91 98765 43212', email: 'bbelite@example.com' },
+    openingHours: {
+      Monday: '6:00 AM - 10:00 PM',
+      Tuesday: '6:00 AM - 10:00 PM',
+      Wednesday: '6:00 AM - 10:00 PM',
+      Thursday: '6:00 AM - 10:00 PM',
+      Friday: '6:00 AM - 10:00 PM',
+      Saturday: '6:00 AM - 10:00 PM',
+      Sunday: '6:00 AM - 10:00 PM'
+    },
+    owner: '2'
+  },
+  {
+    id: '4',
+    name: 'Table Tennis Pro Center',
+    description: 'Professional table tennis facility with international standard equipment.',
+    city: 'Delhi',
+    sport: 'table-tennis',
+    price: 600,
+    rating: 4.7,
+    images: [
+      '/public/assets/Table Tennis.png',
+      '/public/assets/tablet-tenis.png'
+    ],
+    facilities: ['Parking', 'Equipment Rental', 'Refreshments'],
+    address: '456 Sports Hub, Connaught Place, Delhi - 110001',
+    contact: { phone: '+91 98765 43213', email: 'ttpro@example.com' },
+    openingHours: {
+      Monday: '7:00 AM - 11:00 PM',
+      Tuesday: '7:00 AM - 11:00 PM',
+      Wednesday: '7:00 AM - 11:00 PM',
+      Thursday: '7:00 AM - 11:00 PM',
+      Friday: '7:00 AM - 11:00 PM',
+      Saturday: '7:00 AM - 11:00 PM',
+      Sunday: '7:00 AM - 11:00 PM'
+    },
+    owner: '2'
+  },
+  {
+    id: '5',
+    name: 'Volleyball Beach Arena',
+    description: 'Outdoor volleyball court with sand and floodlights.',
+    city: 'Goa',
+    sport: 'volleyball',
+    price: 900,
+    rating: 4.6,
+    images: [
+      '/public/assets/Volleyball.png',
+      '/public/assets/volleyball-home.png'
+    ],
+    facilities: ['Parking', 'Floodlights', 'Showers'],
+    address: 'Beachside Sports Complex, Baga Beach, Goa - 403516',
+    contact: { phone: '+91 98765 43214', email: 'volleybeach@example.com' },
+    openingHours: {
+      Monday: '8:00 AM - 8:00 PM',
+      Tuesday: '8:00 AM - 8:00 PM',
+      Wednesday: '8:00 AM - 8:00 PM',
+      Thursday: '8:00 AM - 8:00 PM',
+      Friday: '8:00 AM - 8:00 PM',
+      Saturday: '8:00 AM - 8:00 PM',
+      Sunday: '8:00 AM - 8:00 PM'
+    },
+    owner: '1'
+  },
+  {
+    id: '6',
+    name: 'Pickleball Smash Court',
+    description: 'Modern pickleball court with synthetic flooring and night lighting.',
+    city: 'Hyderabad',
+    sport: 'pickleball',
+    price: 700,
+    rating: 4.4,
+    images: [
+      '/public/assets/Pickleball.png',
+      '/public/assets/easy_section_back.png'
+    ],
+    facilities: ['Parking', 'Night Lighting', 'Equipment Rental'],
+    address: 'Pickleball Arena, Jubilee Hills, Hyderabad - 500033',
+    contact: { phone: '+91 98765 43215', email: 'pickleballarena@example.com' },
+    openingHours: {
+      Monday: '7:00 AM - 10:00 PM',
+      Tuesday: '7:00 AM - 10:00 PM',
+      Wednesday: '7:00 AM - 10:00 PM',
+      Thursday: '7:00 AM - 10:00 PM',
+      Friday: '7:00 AM - 10:00 PM',
+      Saturday: '7:00 AM - 10:00 PM',
+      Sunday: '7:00 AM - 10:00 PM'
+    },
+    owner: '2'
   }
+];
+
+// --- STATIC VENUE ENDPOINTS ---
+
+// Get all venues
+app.get('/api/venues', (req, res) => {
+  res.json(staticVenues);
 });
 
-app.get('/api/venues', async (req, res) => {
-  try {
-    const venues = await Venue.find().populate('owner', 'name email');
-    res.json(venues);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching venues' });
+// Get venue by ID
+app.get('/api/venues/:id', (req, res) => {
+  const venue = staticVenues.find(v => v.id === req.params.id);
+  if (!venue) {
+    return res.status(404).json({ message: 'Venue not found (static)' });
   }
+  res.json(venue);
 });
 
-app.get('/api/venues/:id', async (req, res) => {
-  try {
-    const venue = await Venue.findById(req.params.id).populate('owner', 'name email');
-    if (!venue) {
-      return res.status(404).json({ message: 'Venue not found' });
-    }
-    res.json(venue);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching venue' });
-  }
+// Create venue
+app.post('/api/venues', (req, res) => {
+  res.status(201).json({ message: 'Venue created successfully (static)' });
 });
 
-app.put('/api/venues/:id', authenticateToken, async (req, res) => {
-  try {
-    const venue = await Venue.findById(req.params.id);
-    if (!venue) {
-      return res.status(404).json({ message: 'Venue not found' });
-    }
-
-    // Check if user is the owner or super admin
-    const user = await User.findById(req.user.id);
-    if (venue.owner.toString() !== req.user.id && user.role !== 'super_admin') {
-      return res.status(403).json({ message: 'Not authorized' });
-    }
-
-    const updatedVenue = await Venue.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    ).populate('owner', 'name email');
-
-    res.json(updatedVenue);
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating venue' });
-  }
+// Update venue
+app.put('/api/venues/:id', (req, res) => {
+  res.json({ message: 'Venue updated successfully (static)' });
 });
 
-app.delete('/api/venues/:id', authenticateToken, async (req, res) => {
-  try {
-    const venue = await Venue.findById(req.params.id);
-    if (!venue) {
-      return res.status(404).json({ message: 'Venue not found' });
-    }
-
-    // Check if user is the owner or super admin
-    const user = await User.findById(req.user.id);
-    if (venue.owner.toString() !== req.user.id && user.role !== 'super_admin') {
-      return res.status(403).json({ message: 'Not authorized' });
-    }
-
-    await venue.remove();
-    res.json({ message: 'Venue deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error deleting venue' });
-  }
+// Delete venue
+app.delete('/api/venues/:id', (req, res) => {
+  res.json({ message: 'Venue deleted successfully (static)' });
 });
 
 // Booking endpoints
@@ -337,24 +439,16 @@ app.get('/api', (req, res) => {
 });
 
 // Search turfs endpoint
-app.get('/api/turfs/search', async (req, res) => {
-  try {
+app.get('/api/turfs/search', (req, res) => {
   const { sport, city } = req.query;
-    let query = {};
-  
+  let results = staticVenues;
   if (sport) {
-      query.sport = new RegExp(sport, 'i'); // Case-insensitive search
+    results = results.filter(v => v.sport.toLowerCase().includes(String(sport).toLowerCase()));
   }
   if (city) {
-      query.city = new RegExp(city, 'i'); // Case-insensitive search
-    }
-
-    const venues = await Venue.find(query).populate('owner', 'name email');
-    res.json(venues);
-  } catch (error) {
-    console.error('Error searching turfs:', error);
-    res.status(500).json({ message: 'Error searching turfs' });
+    results = results.filter(v => v.city.toLowerCase().includes(String(city).toLowerCase()));
   }
+  res.json(results);
 });
 
 // Get turf by ID endpoint

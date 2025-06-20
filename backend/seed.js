@@ -10,9 +10,8 @@ const seedData = async () => {
     // Connect to MongoDB
     await connectDB();
 
-    // Clear existing data
-    await User.deleteMany({});
-    await Venue.deleteMany({});
+    // Drop the entire database to ensure a clean state
+    await mongoose.connection.dropDatabase();
 
     // Create super admin
     const superAdmin = await User.create({

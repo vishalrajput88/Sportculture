@@ -200,6 +200,10 @@
 
 
 
+          .venue_grid  .MuiPaper-rounded { border-radius: 5px 5px 0px 0px !important; }
+
+
+
 
 @media (max-width: 768px) {
   .featured_venues {
@@ -279,7 +283,7 @@
 
 .venue_actions {
   display: flex;
-  justify-content: space-between;
+  gap: 20px;
   align-items: center;
   margin-top: 1rem;
 }
