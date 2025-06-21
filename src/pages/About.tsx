@@ -1,105 +1,71 @@
-import {
-  Box,
-  Typography,
-  Paper,
-  Grid,
-  Card,
-  CardContent,
-  Avatar
-} from '@mui/material';
-import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
-import TheaterComedyIcon from '@mui/icons-material/TheaterComedy';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import React from 'react';
+import styles from './About.module.css';
+
+const teamMembers = [
+  {
+    name: 'Jane Doe',
+    role: 'Founder & CEO',
+    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500'
+  },
+  {
+    name: 'John Smith',
+    role: 'Head of Operations',
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500'
+  },
+  {
+    name: 'Emily Jones',
+    role: 'Lead Developer',
+    image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=500'
+  },
+  {
+    name: 'Michael Brown',
+    role: 'Marketing Director',
+    image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500'
+  }
+];
 
 const About = () => {
-  const features = [
-    {
-      icon: <SportsSoccerIcon sx={{ fontSize: 40 }} />,
-      title: 'Sports Coverage',
-      description: 'Comprehensive coverage of various sports events, from local matches to international tournaments.'
-    },
-    {
-      icon: <TheaterComedyIcon sx={{ fontSize: 40 }} />,
-      title: 'Cultural Events',
-      description: 'Stay updated with the latest cultural events, festivals, and artistic performances.'
-    },
-    {
-      icon: <EmojiEventsIcon sx={{ fontSize: 40 }} />,
-      title: 'Community Engagement',
-      description: 'Join a vibrant community of sports and culture enthusiasts.'
-    }
-  ];
-
   return (
-    <Box>
-      <Paper
-        elevation={0}
-        sx={{
-          bgcolor: 'primary.main',
-          color: 'white',
-          p: 4,
-          mb: 4,
-          borderRadius: 2
-        }}
-      >
-        <Typography variant="h4" component="h1" gutterBottom>
-          About Sports & Culture
-        </Typography>
-        <Typography variant="body1" paragraph>
-          Welcome to Sports & Culture, your premier destination for sports events and cultural experiences.
-          We bring together the best of both worlds, creating a platform where sports enthusiasts and
-          culture lovers can find everything they need in one place.
-        </Typography>
-      </Paper>
+    <div className={styles.pageContainer}>
+      <section className={styles.heroSection}>
+        <h1 className={styles.heroTitle}>Connecting Communities Through Sports.</h1>
+        <p className={styles.heroSubtitle}>
+          We believe in the power of play to bring people together. That's why we built a platform
+          that makes it easier than ever to discover and book sports facilities in your community.
+        </p>
+      </section>
 
-      <Typography variant="h5" component="h2" gutterBottom>
-        Our Mission
-      </Typography>
-      <Typography variant="body1" paragraph>
-        Our mission is to bridge the gap between sports and culture, creating a community where
-        people can discover, engage with, and celebrate both athletic achievements and cultural
-        expressions. We believe that sports and culture are deeply interconnected, each enriching
-        the other in unique ways.
-      </Typography>
-
-      <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4 }}>
-        What We Offer
-      </Typography>
-      <Grid container spacing={4} sx={{ mt: 2 }}>
-        {features.map((feature, index) => (
-          <Grid item xs={12} md={4} key={index}>
-            <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Box sx={{ mb: 2, color: 'primary.main' }}>
-                  {feature.icon}
-                </Box>
-                <Typography variant="h6" component="h3" gutterBottom>
-                  {feature.title}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {feature.description}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-
-      <Paper sx={{ p: 4, mt: 4, bgcolor: 'grey.50' }}>
-        <Typography variant="h5" component="h2" gutterBottom>
-          Contact Us
-        </Typography>
-        <Typography variant="body1">
-          Have questions or suggestions? We'd love to hear from you! Reach out to us at:
-        </Typography>
-        <Typography variant="body1" sx={{ mt: 1 }}>
-          Email: contact@sportsculture.com
-        </Typography>
-        <Typography variant="body1">
-          Phone: +1 (555) 123-4567
-        </Typography>
-      </Paper>
-    </Box>
+      <section className={styles.contentSection}>
+        <h2 className={styles.sectionTitle}>Our Mission</h2>
+        <p className={styles.sectionText}>
+          Our mission is simple: to foster a culture of health, activity, and community engagement. 
+          We want to break down the barriers to accessing sports facilities, making it seamless for 
+          individuals, families, and teams to get active and connect with one another.
+        </p>
+        <img 
+          src="https://images.unsplash.com/photo-1521295121783-8a321d551ad2?w=1200" 
+          alt="People playing sports" 
+          className={styles.sectionImage}
+        />
+      </section>
+      
+      <section className={styles.contentSection}>
+        <h2 className={styles.sectionTitle}>Meet the Team</h2>
+        <p className={styles.sectionText}>
+          We are a passionate group of developers, designers, and sports enthusiasts dedicated
+          to making a difference.
+        </p>
+        <div className={styles.teamGrid}>
+          {teamMembers.map(member => (
+            <div key={member.name} className={styles.teamMember}>
+              <img src={member.image} alt={member.name} className={styles.teamImage} />
+              <h3 className={styles.teamName}>{member.name}</h3>
+              <p className={styles.teamRole}>{member.role}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
   );
 };
 

@@ -25,6 +25,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import CustomerLogin from './pages/CustomerLogin';
 import CustomerSignup from './pages/CustomerSignup';
 import Footer from './components/Footer';
+import Blogs from './pages/Blogs';
+import Contact from './pages/Contact';
 
 function App() {
   return (
@@ -40,6 +42,8 @@ function App() {
               <Route path="/culture" element={<Culture />} />
               <Route path="/about" element={<About />} />
               <Route path="/courts" element={<Courts />} />
+              <Route path="/blogs" element={<Blogs />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="/turf-booking" element={<HeroBanner />} />
               <Route path="/search-results" element={<SearchResults />} />
               <Route path="/turfs" element={<TurfList />} />
