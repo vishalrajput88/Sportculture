@@ -11,6 +11,7 @@ import Home from './pages/Home';
 import Sports from './pages/Sports';
 import Culture from './pages/Culture';
 import About from './pages/About';
+import Courts from './pages/Courts';
 import HeroBanner from './components/HeroBanner';
 import SearchResults from './components/SearchResults';
 import TurfList from './pages/TurfList';
@@ -36,6 +37,7 @@ function App() {
               <Route path="/sports" element={<Sports />} />
               <Route path="/culture" element={<Culture />} />
               <Route path="/about" element={<About />} />
+              <Route path="/courts" element={<Courts />} />
               <Route path="/turf-booking" element={<HeroBanner />} />
               <Route path="/search-results" element={<SearchResults />} />
               <Route path="/turfs" element={<TurfList />} />

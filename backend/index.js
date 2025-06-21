@@ -146,8 +146,7 @@ const staticVenues = [
     price: 800,
     rating: 4.5,
     images: [
-      '/public/assets/Badminton.png',
-      '/public/assets/buildings.png'
+      'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&auto=format&fit=crop&q=60' // Badminton
     ],
     facilities: ['Parking', 'AC Hall', 'Equipment Rental'],
     address: '123 Sports Complex, Andheri West, Mumbai - 400053',
@@ -172,8 +171,7 @@ const staticVenues = [
     price: 1000,
     rating: 4.7,
     images: [
-      '/public/assets/Tennis.png',
-      '/public/assets/hero-section-back-img.png'
+      'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=60' // Tennis
     ],
     facilities: ['Parking', 'Refreshments', 'Locker Room'],
     address: '456 Tennis Avenue, Koregaon Park, Pune - 411001',
@@ -198,8 +196,7 @@ const staticVenues = [
     price: 1200,
     rating: 4.8,
     images: [
-      '/public/assets/Basketball.png',
-      '/public/assets/volleyball-home.png'
+      'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&auto=format&fit=crop&q=60' // Basketball
     ],
     facilities: ['Parking', 'Floodlights', 'Refreshments'],
     address: '789 Sports Complex, Koramangala, Bangalore - 560034',
@@ -224,8 +221,7 @@ const staticVenues = [
     price: 600,
     rating: 4.7,
     images: [
-      '/public/assets/Table Tennis.png',
-      '/public/assets/tablet-tenis.png'
+      'https://images.unsplash.com/photo-1519864600265-abb23847ef2c?w=800&auto=format&fit=crop&q=60' // Table Tennis
     ],
     facilities: ['Parking', 'Equipment Rental', 'Refreshments'],
     address: '456 Sports Hub, Connaught Place, Delhi - 110001',
@@ -250,8 +246,7 @@ const staticVenues = [
     price: 900,
     rating: 4.6,
     images: [
-      '/public/assets/Volleyball.png',
-      '/public/assets/volleyball-home.png'
+      'https://images.unsplash.com/photo-1509228468518-c5eeecbff44a?w=800&auto=format&fit=crop&q=60' // Volleyball
     ],
     facilities: ['Parking', 'Floodlights', 'Showers'],
     address: 'Beachside Sports Complex, Baga Beach, Goa - 403516',
@@ -276,8 +271,7 @@ const staticVenues = [
     price: 700,
     rating: 4.4,
     images: [
-      '/public/assets/Pickleball.png',
-      '/public/assets/easy_section_back.png'
+      'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60' // Pickleball
     ],
     facilities: ['Parking', 'Night Lighting', 'Equipment Rental'],
     address: 'Pickleball Arena, Jubilee Hills, Hyderabad - 500033',
@@ -452,17 +446,12 @@ app.get('/api/turfs/search', (req, res) => {
 });
 
 // Get turf by ID endpoint
-app.get('/api/turfs/:id', async (req, res) => {
-  try {
-    const venue = await Venue.findById(req.params.id).populate('owner', 'name email');
-    if (!venue) {
-      return res.status(404).json({ message: 'Turf not found' });
-    }
-    res.json(venue);
-  } catch (error) {
-    console.error('Error fetching turf by ID:', error);
-    res.status(500).json({ message: 'Error fetching turf' });
+app.get('/api/turfs/:id', (req, res) => {
+  const venue = staticVenues.find(v => v.id === req.params.id);
+  if (!venue) {
+    return res.status(404).json({ message: 'Turf not found (static)' });
   }
+  res.json(venue);
 });
 
 // Error handling middleware

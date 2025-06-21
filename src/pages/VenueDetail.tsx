@@ -1,281 +1,259 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Container,
-  Box,
-  Typography,
-  Grid,
-  Paper,
-  Rating,
-  Chip,
-  Button,
-  Divider,
-  IconButton,
-  Tab,
-  Tabs,
-} from '@mui/material';
-import {
-  LocationOn,
-  AccessTime,
-  Phone,
-  Email,
-  Share,
-  Favorite,
-  FavoriteBorder,
-} from '@mui/icons-material';
-import { DatePicker, TimePicker } from '@mui/x-date-pickers';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs from 'dayjs';
+import { useParams } from 'react-router-dom';
+import styles from './VenueDetail.module.css';
 
-interface Venue {
-  id: number;
-  name: string;
-  city: string;
-  sport: string;
-  price: number;
-  rating: number;
-  images: string[];
-  availableSlots: { date: string; time: string }[];
-  facilities: string[];
-  location: { lat: number; lng: number };
-  address: string;
-  description: string;
-  contact: {
-    phone: string;
-    email: string;
-  };
-  openingHours: {
-    [key: string]: string;
-  };
-}
+// Using a simple unicode character for the checkmark icon
+const CheckmarkIcon = () => <span className={styles.amenityIcon}>✔</span>;
+
+// The emoji icons have been removed from this list
+const amenitiesList = [
+  { label: 'Parking' },
+  { label: 'Washroom' },
+  { label: 'Lockers' },
+  { label: 'Drinking Water' },
+  { label: 'Flood Lights' },
+];
+
+const sportsIcons = [
+  { label: 'Pickleball', icon: '🏓' },
+  { label: 'Tennis', icon: '🎾' },
+  { label: 'Table Tennis', icon: '🏓' },
+  { label: 'Badminton', icon: '🏸' },
+];
+
+const venuesNearby = [
+  {
+    id: '7',
+    name: 'Sports monk Pickleball - Home of Sports Ahmadabad',
+    image: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60',
+    sport: 'Pickleball',
+    address: 'Chhipa Bakhal, Main Road Shanti Nagar Jain Colony, Indore, Madhya Pradesh - 452001',
+  },
+];
 
 const VenueDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const [venue, setVenue] = useState<Venue | null>(null);
+  const [venue, setVenue] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs | null>(dayjs());
-  const [selectedTime, setSelectedTime] = useState<dayjs.Dayjs | null>(null);
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [activeTab, setActiveTab] = useState(0);
+  const [isBooking, setIsBooking] = useState(false);
+  const [duration, setDuration] = useState(1);
+  const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     const fetchVenueDetails = async () => {
       try {
         setLoading(true);
-        if (!id) {
-          throw new Error('Venue ID is required');
-        }
+        if (!id) throw new Error('Venue ID is required');
         const response = await fetch(`http://localhost:3000/api/turfs/${id}`);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch venue details: ${response.statusText}`);
-        }
+        if (!response.ok) throw new Error(`Failed to fetch venue details: ${response.statusText}`);
         const data = await response.json();
-        if (!data) {
-          throw new Error('No venue data received');
-        }
         setVenue(data);
         setError(null);
       } catch (err: any) {
-        console.error('Error fetching venue details:', err);
         setError(err.message || 'Failed to fetch venue details');
       } finally {
         setLoading(false);
       }
     };
-
     fetchVenueDetails();
   }, [id]);
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
+  const handleDurationChange = (amount: number) => {
+    setDuration((prev) => Math.max(1, prev + amount));
   };
 
-  const handleBookNow = () => {
-    // Implement booking logic
-    console.log('Booking venue:', venue?.id);
+  const handleBookingSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowPopup(true);
   };
 
-  if (loading) return <Typography>Loading...</Typography>;
-  if (error) return <Typography color="error">{error}</Typography>;
-  if (!venue) return <Typography>Venue not found</Typography>;
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p style={{ color: 'red' }}>{error}</p>;
+  if (!venue) return <p>Venue not found</p>;
+
+  const ImageGallery = () => (
+    <div className={styles.section}>
+      <img
+        src={venue.images[currentImageIndex]}
+        alt={venue.name}
+        className={styles.mainImage}
+      />
+      <div className={styles.thumbnailContainer}>
+        {venue.images.map((img: string, idx: number) => (
+          <img
+            key={idx}
+            src={img}
+            alt={venue.name + ' thumbnail'}
+            className={`${styles.thumbnail} ${idx === currentImageIndex ? styles.thumbnailActive : ''}`}
+            onClick={() => setCurrentImageIndex(idx)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+
+  const BookingPopup = () => (
+    <div className={styles.popupOverlay}>
+      <div className={styles.popup}>
+        <div className={styles.popupHeader}>
+          <h3 className={styles.popupTitle}>Booking at Sports Lover Court Ahmedabad</h3>
+          <button onClick={() => setShowPopup(false)} className={styles.popupCloseButton}>&times;</button>
+        </div>
+        <div className={styles.popupBookingDetails}>
+          <div>
+            <p className={styles.popupBookingText}>Table Tennis</p>
+            <p className={styles.popupBookingText}>13, June 2025</p>
+          </div>
+          <div>
+            <p className={styles.popupBookingText}>04:00 PM to 05:00 PM</p>
+          </div>
+        </div>
+        <div className={styles.popupPaymentInfo}>
+          <p className={styles.popupPaymentLabel}>PAY FOR BOOK</p>
+          <p className={styles.popupPrice}>INR {venue.price * duration}</p>
+        </div>
+        <button className={styles.bookButton}>PAY NOW & BOOK SLOT</button>
+      </div>
+    </div>
+  );
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      {/* Image Gallery */}
-      <Box sx={{ position: 'relative', mb: 4 }}>
-        <Box
-          component="img"
-          src={venue.images[currentImageIndex]}
-          alt={venue.name}
-          sx={{
-            width: '100%',
-            height: 400,
-            objectFit: 'cover',
-            borderRadius: 2,
-          }}
-        />
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: 16,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            display: 'flex',
-            gap: 1,
-          }}
-        >
-          {venue.images.map((_, index) => (
-            <Box
-              key={index}
-              sx={{
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
-                bgcolor: index === currentImageIndex ? 'white' : 'rgba(255, 255, 255, 0.5)',
-                cursor: 'pointer',
-              }}
-              onClick={() => setCurrentImageIndex(index)}
-            />
-          ))}
-        </Box>
-      </Box>
+    <div className={styles.container}>
+      <h1 className={styles.title}>{venue.name}</h1>
+      <p className={styles.address}>{venue.address}</p>
 
-      {/* Main Content */}
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
-        <Box sx={{ flex: { md: '2' } }}>
-          <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h4" component="h1">
-                {venue.name}
-              </Typography>
-              <Box>
-                <IconButton onClick={() => setIsFavorite(!isFavorite)}>
-                  {isFavorite ? <Favorite color="error" /> : <FavoriteBorder />}
-                </IconButton>
-                <IconButton>
-                  <Share />
-                </IconButton>
-              </Box>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-              <Rating value={venue.rating} precision={0.5} readOnly />
-              <Typography variant="body2" color="text.secondary">
-                ({venue.rating})
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                <LocationOn sx={{ verticalAlign: 'middle', mr: 0.5 }} />
-                {venue.address}
-              </Typography>
-            </Box>
-            <Typography variant="body1" paragraph>
-              {venue.description}
-            </Typography>
-          </Box>
-
-          {/* Tabs Section */}
-          <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-            <Tabs value={activeTab} onChange={handleTabChange}>
-              <Tab label="Facilities" />
-              <Tab label="Opening Hours" />
-              <Tab label="Location" />
-            </Tabs>
-          </Box>
-
-          {/* Tab Content */}
-          <Box>
-            {activeTab === 0 && (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                {venue.facilities.map((facility, index) => (
-                  <Chip key={index} label={facility} />
+      <div className={styles.layout}>
+        {isBooking ? (
+          <>
+            <div className={styles.mainContent}>
+              <form className={styles.form} onSubmit={handleBookingSubmit}>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Sports</label>
+                  <select className={styles.formInput}>
+                    <option>Table Tennis</option>
+                    <option>Badminton</option>
+                  </select>
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Date</label>
+                  <div className={styles.inputWithIcon}>
+                    <input type="date" className={styles.formInput} defaultValue="2025-06-11" />
+                    <span className={styles.inputIcon}>📅</span>
+                  </div>
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Start Time</label>
+                  <div className={styles.inputWithIcon}>
+                    <input type="time" className={styles.formInput} defaultValue="18:00" />
+                    <span className={styles.inputIcon}>🕒</span>
+                  </div>
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Duration</label>
+                  <div className={styles.durationControl}>
+                    <button type="button" className={styles.durationButton} onClick={() => handleDurationChange(-1)}>-</button>
+                    <span className={styles.durationDisplay}>{duration} hr</span>
+                    <button type="button" className={styles.durationButton} onClick={() => handleDurationChange(1)}>+</button>
+                  </div>
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Court</label>
+                  <select className={styles.formInput}>
+                    <option>--Select Court--</option>
+                  </select>
+                </div>
+                <button type="submit" className={styles.bookButton}>Book Your Slot Now</button>
+              </form>
+            </div>
+            <div className={styles.sidebar}>
+              <ImageGallery />
+            </div>
+          </>
+        ) : (
+          <>
+            <div className={styles.mainContent}>
+              <ImageGallery />
+              <div className={styles.section}>
+                <h2 className={styles.sectionTitle}>Amenities</h2>
+                <div className={styles.amenitiesList}>
+                  {amenitiesList.map((item) => (
+                    <div key={item.label} className={styles.amenityItem}>
+                      <CheckmarkIcon />
+                      <span>{item.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className={styles.section}>
+                <h2 className={styles.sectionTitle}>About Venue</h2>
+                <h3 className={styles.aboutSportTitle}>Table Tennis</h3>
+                <p className={styles.aboutText}>
+                  Sports equipment available on rent: Rackets, Balls.<br />
+                  Barefoot play is strictly prohibited.<br />
+                  A maximum of 2 members per booking per TT Table is admissible.
+                </p>
+                <h3 className={styles.aboutSportTitle}>Badminton</h3>
+                <p className={styles.aboutText}>
+                  Badminton Non-Marking Shoes compulsory for Badminton. Shoes must be worn after entering the facility.<br />
+                  Sports equipment available on rent: Rackets, Shoes.<br />
+                  Socks are compulsory for rented shoes. Please carry your own.<br />
+                  Barefoot play is strictly prohibited.<br />
+                  A maximum of 4 members per booking per badminton court is admissible.
+                </p>
+              </div>
+            </div>
+            <div className={styles.sidebar}>
+              <div className={styles.sidebarCard}>
+                <iframe
+                  title="Venue Map"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3683.123456789!2d75.8577!3d22.7196!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjLCsDQzJzExLjAiTiA3NcKwNTEnMjcuOSJF!5e0!3m2!1sen!2sin!4v1680000000000!5m2!1sen!2sin"
+                  className={styles.map}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                ></iframe>
+                <div>
+                  <h4 className={styles.timingsTitle}>Timing</h4>
+                  <p>Monday - Sunday</p>
+                  <p>INR {venue.price}/hour</p>
+                  <p>07:00 AM - 10:00 PM</p>
+                </div>
+                <button className={styles.bookButton} onClick={() => setIsBooking(true)}>
+                  Book Your Slot Now
+                </button>
+              </div>
+              <div className={styles.sidebarCard}>
+                <h4 className={styles.sportsTitle}>Sports Available</h4>
+                <div className={styles.sportsList}>
+                  {sportsIcons.map((item) => (
+                    <div key={item.label} className={styles.sportItem}>
+                      <span className={styles.sportIcon}>{item.icon}</span>
+                      <span className={styles.sportLabel}>{item.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className={styles.sidebarCard}>
+                <h4 className={styles.nearbyTitle}>Venues nearby</h4>
+                {venuesNearby.map((v) => (
+                  <div key={v.id} className={styles.nearbyItem}>
+                    <img src={v.image} alt={v.name} className={styles.nearbyImage} />
+                    <div>
+                      <p className={styles.nearbySport}>{v.sport.toUpperCase()}</p>
+                      <p className={styles.nearbyName}>{v.name}</p>
+                      <p className={styles.nearbyLink}>View More</p>
+                    </div>
+                  </div>
                 ))}
-              </Box>
-            )}
-            {activeTab === 1 && (
-              <Box>
-                {Object.entries(venue.openingHours).map(([day, hours]) => (
-                  <Box key={day} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography variant="body1">{day}</Typography>
-                    <Typography variant="body1">{hours}</Typography>
-                  </Box>
-                ))}
-              </Box>
-            )}
-            {activeTab === 2 && (
-              <Box sx={{ height: 300, bgcolor: 'grey.200' }}>
-                {/* Add map component here */}
-                <Typography>Map will be displayed here</Typography>
-              </Box>
-            )}
-          </Box>
-        </Box>
-
-        {/* Booking Sidebar */}
-        <Box sx={{ flex: { md: '1' } }}>
-          <Paper sx={{ p: 3, position: 'sticky', top: 24 }}>
-            <Typography variant="h5" gutterBottom>
-              Book Now
-            </Typography>
-            <Typography variant="h4" color="primary" gutterBottom>
-              ₹{venue.price}/hour
-            </Typography>
-            <Divider sx={{ my: 2 }} />
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Box sx={{ mb: 2 }}>
-                <DatePicker
-                  label="Select Date"
-                  value={selectedDate}
-                  onChange={(newValue) => setSelectedDate(newValue)}
-                  slotProps={{ textField: { fullWidth: true } }}
-                />
-              </Box>
-              <Box sx={{ mb: 2 }}>
-                <TimePicker
-                  label="Select Time"
-                  value={selectedTime}
-                  onChange={(newValue) => setSelectedTime(newValue)}
-                  slotProps={{ textField: { fullWidth: true } }}
-                />
-              </Box>
-            </LocalizationProvider>
-            <Button
-              variant="contained"
-              color="primary"
-              fullWidth
-              size="large"
-              onClick={handleBookNow}
-              sx={{ mb: 2 }}
-            >
-              Book Now
-            </Button>
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="subtitle2" gutterBottom>
-                Contact Information
-              </Typography>
-              {venue.contact ? (
-                <>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <Phone sx={{ mr: 1 }} />
-                    <Typography variant="body2">{venue.contact.phone}</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Email sx={{ mr: 1 }} />
-                    <Typography variant="body2">{venue.contact.email}</Typography>
-                  </Box>
-                </>
-              ) : (
-                <Typography variant="body2" color="text.secondary">
-                  Contact information not available
-                </Typography>
-              )}
-            </Box>
-          </Paper>
-        </Box>
-      </Box>
-    </Container>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+      {showPopup && <BookingPopup />}
+    </div>
   );
 };
 
