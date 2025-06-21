@@ -17,6 +17,8 @@ import SearchResults from './components/SearchResults';
 import TurfList from './pages/TurfList';
 import VenueListing from './pages/VenueListing';
 import VenueDetail from './pages/VenueDetail';
+import Booking from './pages/Booking';
+import Payment from './pages/Payment';
 import AdminLogin from './pages/AdminLogin';
 import AdminSignup from './pages/AdminSignup';
 import AdminDashboard from './pages/AdminDashboard';
@@ -43,6 +45,8 @@ function App() {
               <Route path="/turfs" element={<TurfList />} />
               <Route path="/venues" element={<VenueListing />} />
               <Route path="/venues/:id" element={<VenueDetail />} />
+              <Route path="/booking/:id" element={<Booking />} />
+              <Route path="/payment/:id" element={<Payment />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin/signup" element={<AdminSignup />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
