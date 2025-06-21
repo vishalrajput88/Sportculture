@@ -134,10 +134,11 @@ const VenueDetail = () => {
               <p>INR {venue.price}/hour</p>
               <p>07:00 AM - 10:00 PM</p>
             </div>
-            <button className={styles.bookButton} onClick={() => navigate(`/booking/${id}`)}>
+           
+          </div>
+          <button className={styles.bookButton} onClick={() => navigate(`/booking/${id}`)}>
               Book Your Slot Now
             </button>
-          </div>
           <div className={styles.sidebarCard}>
             <h4 className={styles.sportsTitle}>Sports Available</h4>
             <div className={styles.sportsList}>

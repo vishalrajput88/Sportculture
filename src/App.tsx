@@ -27,6 +27,9 @@ import CustomerSignup from './pages/CustomerSignup';
 import Footer from './components/Footer';
 import Blogs from './pages/Blogs';
 import Contact from './pages/Contact';
+import Volunteer from './pages/Volunteer';
+import Games from './pages/Games';
+import BackToTop from './components/BackToTop';
 
 function App() {
   return (
@@ -42,7 +45,9 @@ function App() {
               <Route path="/culture" element={<Culture />} />
               <Route path="/about" element={<About />} />
               <Route path="/courts" element={<Courts />} />
+              <Route path="/games" element={<Games />} />
               <Route path="/blogs" element={<Blogs />} />
+              <Route path="/volunteer" element={<Volunteer />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/turf-booking" element={<HeroBanner />} />
               <Route path="/search-results" element={<SearchResults />} />
@@ -58,6 +63,7 @@ function App() {
               <Route path="/signup" element={<CustomerSignup />} />
             </Routes>
           </div>
+          <BackToTop />
           <Footer />
         </Router>
       </LocalizationProvider>
