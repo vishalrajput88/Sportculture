@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './About.module.css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
+import { motion } from 'framer-motion';
 
 declare module "slick-carousel/slick/slick.css";
 declare module "slick-carousel/slick/slick-theme.css";
@@ -36,22 +37,26 @@ const teamMembers = [
 ];
 
 const About = () => {
+  const [ctaEmail, setCtaEmail] = useState('');
+
   return (
     <div className={styles.pageContainer}>
       <section className={styles.heroSection}>
-        <h1 className={styles.heroTitle}>Connecting Communities Through Sports.</h1>
-        <p className={styles.heroSubtitle}>
-          We believe in the power of play to bring people together. That's why we built a platform
-          that makes it easier than ever to discover and book sports facilities in your community.
-        </p>
+      <h5 className={styles.heroSubtitle}>
+        Rebuilding the Spirit of Sports.
+        </h5>
+        <h1 className={styles.heroTitle}>About Sports Culture</h1>
+      <p>In today's fast-moving world, playing has taken a back seat. Stadiums are full, but playgrounds are empty. People watch sports — but fewer people play.
+<b>Sports Culture </b>is created to change that.
+We are a growing movement dedicated to bringing people back to playing — not just watching. Whether you're discovering your first sport, a former athlete missing the game or someone simply looking for a healthy and active lifestyle —<b> Sports Culture welcomes everyone</b>.
+Our platform is not just about games — it's about creating accessible, inclusive, and vibrant sports communities across cities.
+</p>
       </section>
 
       <section className={styles.contentSection}>
-        <h2 className={styles.sectionTitle}>Our Mission</h2>
+        <h3 className={styles.sectionTitle}>Our Vision </h3>
         <p className={styles.sectionText}>
-          Our mission is simple: to foster a culture of health, activity, and community engagement. 
-          We want to break down the barriers to accessing sports facilities, making it seamless for 
-          individuals, families, and teams to get active and connect with one another.
+        To reignite everyday sports culture — across age, skill and background.
         </p>
         <img 
           src="https://images.unsplash.com/photo-1521295121783-8a321d551ad2?w=1200" 
@@ -59,63 +64,92 @@ const About = () => {
           className={styles.sectionImage}
         />
       </section>
-      
-      <section className={styles.contentSection}>
-        <h2 className={styles.sectionTitle}>Meet the Team</h2>
-        <p className={styles.sectionText}>
-          We are a passionate group of developers, designers, and sports enthusiasts dedicated
-          to making a difference.
-        </p>
-        <Swiper
-          modules={[Autoplay, Pagination]}
-          loop
-          autoplay={{ delay: 3000, disableOnInteraction: false }}
-          pagination={{ clickable: true }}
-          centeredSlides={true}  // <-- Add this line
-          breakpoints={{
-            0: { slidesPerView: 1 },        // Mobile
-            640: { slidesPerView: 2 },      // Tablet
-            1024: { slidesPerView: 3 },     // Desktop (3 cards)
-          }}
-          style={{ maxWidth: 800, margin: '0 auto 48px auto' }}
-        >
-          {teamMembers.map((member) => (
-            <SwiperSlide key={member.name}>
-              <div
-                style={{
-                  background: 'rgba(255,255,255,0.7)',
-                  borderRadius: 24,
-                  boxShadow: '0 4px 24px #0001',
-                  backdropFilter: 'blur(8px)',
-                  padding: 32,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  minHeight: 340,
-                  margin: '0 auto',
-                }}
-              >
-                <img
-                  src={member.image}
-                  alt={member.name}
-                  style={{
-                    width: 100,
-                    height: 100,
-                    borderRadius: '50%',
-                    marginBottom: 16,
-                    objectFit: 'cover',
-                    background: '#fff',
-                    boxShadow: '0 2px 12px #f1a50133',
-                  }}
-                />
-                <div style={{ fontWeight: 700, fontSize: '1.2rem', color: '#f1a501', marginBottom: 4 }}>{member.name}</div>
-                <div style={{ color: '#6a1b9a', fontSize: '1rem', marginBottom: 10 }}>{member.role}</div>
-                <div style={{ color: '#444', fontSize: '1rem', textAlign: 'center' }}>{member.desc}</div>
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+
+      <section className={styles.offerSection}>
+        <h3 className={styles.offerTitle}>What We Offer</h3>
+        <div className={styles.offerGrid}>
+          <div className={styles.offerCard}>
+            <span className={styles.iconCircle}>🎯</span>
+            <div>
+              <b>Sports Content</b> — helping you know the game.
+            </div>
+          </div>
+          <div className={styles.offerCard}>
+            <span className={styles.iconCircle}>🎯</span>
+            <div>
+              <b>Multi-Sport Awareness</b> — covering Tennis, Badminton, Table Tennis, Pickleball and much more to come.
+            </div>
+          </div>
+          <div className={styles.offerCard}>
+            <span className={styles.iconCircle}>🎯</span>
+            <div>
+              <b>Community Growth</b> — inspiring schools, colleges, gyms, senior citizens, women and youth to play actively.
+            </div>
+          </div>
+          <div className={styles.offerCard}>
+            <span className={styles.iconCircle}>🎯</span>
+            <div>
+              <b>Real-World Connection</b> — enabling access to spaces and playing opportunities through upcoming solutions.
+            </div>
+          </div>
+        </div>
       </section>
+      
+      <section className={styles.whySection}>
+        <h3 className={styles.whyTitle}>Why It Matters</h3>
+        <p className={styles.whyText}>
+          Because sport is for everyone.<br />
+          We believe that true sports culture grows not in stadiums, but in everyday lives.<br />
+          Let's reclaim play. Together.
+        </p>
+      </section>
+
+      <section className={styles.ctaSection}>
+        
+        <div className={styles.ctaContent}>
+          <h3 className={styles.ctaTitle}>Call To Action</h3>
+          
+          <p className={styles.ctaText}>
+            <span role="img" aria-label="point">👉</span> Follow the journey. Join the community.
+          </p>
+          <div className={styles.ctaIcons}>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className={styles.ctaIcon} aria-label="Instagram">
+              <img src="/src/assets/social-insta.png" alt="Instagram" />
+            </a>
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className={styles.ctaIcon} aria-label="Facebook">
+              <img src="/src/assets/social-fac.png" alt="Facebook" />
+            </a>
+          </div>
+        <div className='flex'> <span role="img" aria-label="mail">📩</span> Stay updated as we build:</div> 
+          <form className={styles.ctaMailForm} onSubmit={e => e.preventDefault()} style={{ position: 'relative' }}>
+            <motion.input
+              type="email"
+              placeholder="Your email"
+              required
+              value={ctaEmail}
+              onChange={e => setCtaEmail(e.target.value)}
+              whileFocus={{ scale: 1.06, boxShadow: '0 6px 24px #6a1b9a33' }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              className={styles.ctaInput}
+              style={{ paddingRight: ctaEmail ? 48 : undefined }}
+            />
+            {ctaEmail && (
+              <button
+                type="submit"
+                className={styles.ctaSendBtn}
+                aria-label="Subscribe"
+                style={{ position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)' }}
+              >
+               <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            )}
+          </form>
+        </div>
+        <div className={styles.ctaMemojiWrap}>
+          <img src="/src/assets/ctapng.png" alt="Memoji" className={styles.ctaMemoji} />
+        </div>
+      </section>
+
     </div>
   );
 };

@@ -31,18 +31,22 @@ const courtsData = [
 
 const Courts = () => {
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Our Courts</h1>
-      <div className={styles.courtsGrid}>
-        {courtsData.map(court => (
-          <div key={court.id} className={styles.courtCard}>
-            <img src={court.image} alt={court.name} className={styles.courtImage} />
-            <div className={styles.courtInfo}>
-              <h2 className={styles.courtName}>{court.name}</h2>
-              <p className={styles.courtLocation}>{court.location}</p>
+    <div className={styles.bgWrap}>
+      <div className={styles.container}>
+        <h1 className={styles.title}>Our Courts</h1>
+        <div className={styles.courtsGrid}>
+          {courtsData.map((court, idx) => (
+            <div key={court.id} className={styles.courtCard} style={{ animationDelay: `${idx * 0.08 + 0.1}s` }}>
+              <div className={styles.imageWrap}>
+                <img src={court.image} alt={court.name} className={styles.courtImage} />
+                <div className={styles.courtInfoOverlay}>
+                  <h2 className={styles.courtName}>{court.name}</h2>
+                  <p className={styles.courtLocation}>{court.location}</p>
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

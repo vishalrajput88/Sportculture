@@ -126,11 +126,17 @@ const Header = () => {
                   <MenuItem onClick={handleProfile}>Profile</MenuItem>
                   <MenuItem onClick={handleLogout}>Logout</MenuItem>
                 </Menu>
+                <Link to="/list-your-ground" className="ml-2 bg-[#F1A501] text-white px-5 py-2 rounded-[40px] font-semibold text-base hover:bg-[#d18e00] transition-colors">
+                  List Your Ground
+                </Link>
               </>
             ) : (
               <div className="flex items-center space-x-2">
                 <Link to="/login" className="bg-[#fff] border-[#F1A501] border-1 text-[#000] px-5 py-2 rounded-[40px] font-semibold text-base">
                   Login
+                </Link>
+                <Link to="/list-your-ground" className="ml-2 bg-[#F1A501] text-white px-5 py-2 rounded-[40px] font-semibold text-base hover:bg-[#d18e00] transition-colors">
+                  List Your Ground
                 </Link>
               </div>
             )}
@@ -178,14 +184,20 @@ const Header = () => {
                 <Link to="/volunteer" className="text-lg font-medium hover:text-[#6a1b9a] py-2 border-b border-gray-100" onClick={handleMobileMenuToggle}>Volunteer</Link>
                 <Link to="/blogs" className="text-lg font-medium hover:text-[#6a1b9a] py-2 border-b border-gray-100" onClick={handleMobileMenuToggle}>Blogs</Link>
                 <Link to="/contact" className="text-lg font-medium hover:text-[#6a1b9a] py-2 border-b border-gray-100" onClick={handleMobileMenuToggle}>Contact</Link>
+                <Link to="/list-your-ground" className="text-lg font-medium hover:text-[#6a1b9a] py-2 border-b border-gray-100" onClick={handleMobileMenuToggle}>List Your Ground</Link>
               </div>
 
               {/* Mobile Login/Admin Section */}
               <div className="mt-6 pt-6 border-t border-gray-200">
                 {!isLoggedIn ? (
-                  <Link to="/login" className="block w-full bg-[#fff] border-[#F1A501] border-2 text-[#000] px-5 py-3 rounded-[40px] font-semibold text-base text-center" onClick={handleMobileMenuToggle}>
-                    Login
-                  </Link>
+                  <>
+                    <Link to="/login" className="block w-full bg-[#fff] border-[#F1A501] border-2 text-[#000] px-5 py-3 rounded-[40px] font-semibold text-base text-center" onClick={handleMobileMenuToggle}>
+                      Login
+                    </Link>
+                    <Link to="/list-your-ground" className="block w-full mt-2 bg-[#F1A501] text-white px-5 py-3 rounded-[40px] font-semibold text-base text-center hover:bg-[#d18e00] transition-colors" onClick={handleMobileMenuToggle}>
+                      List Your Ground
+                    </Link>
+                  </>
                 ) : (
                   <>
                     {adminData && adminData.role === 'superadmin' && (
@@ -193,12 +205,15 @@ const Header = () => {
                         Admin Dashboard
                       </Link>
                     )}
+                    <Link to="/list-your-ground" className="block w-full mt-2 bg-[#F1A501] text-white px-5 py-3 rounded-[40px] font-semibold text-base text-center hover:bg-[#d18e00] transition-colors" onClick={handleMobileMenuToggle}>
+                      List Your Ground
+                    </Link>
                     <button 
                       onClick={() => {
                         handleLogout();
                         handleMobileMenuToggle();
                       }}
-                      className="block w-full text-red-600 hover:text-red-700 text-lg font-medium py-2 text-center mt-2"
+                      className="block w-full bg-red-500 text-white px-5 py-3 rounded-[40px] font-semibold text-base text-center mt-2"
                     >
                       Logout
                     </button>
