@@ -289,6 +289,80 @@ const staticVenues = [
   }
 ];
 
+// Generate 100+ dummy venues
+const sports = ['badminton', 'tennis', 'basketball', 'table-tennis', 'volleyball', 'pickleball', 'football', 'cricket', 'hockey', 'squash'];
+const cities = ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Pune', 'Ahmedabad', 'Kolkata', 'Goa', 'Indore'];
+const facilitiesList = ['Parking', 'AC Hall', 'Equipment Rental', 'Refreshments', 'Locker Room', 'Floodlights', 'Showers', 'Night Lighting', 'Cafeteria', 'WiFi'];
+const images = [
+  // Badminton
+  'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1509228468518-c5eeecbff44a?w=800&auto=format&fit=crop&q=60',
+  // Tennis
+  'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1464983953574-0892a716854b?w=800&auto=format&fit=crop&q=60',
+  // Football
+  'https://images.unsplash.com/photo-1505843275257-8491bfa3b61c?w=800&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1518098268026-4e89f1a2cd8e?w=800&auto=format&fit=crop&q=60',
+  // Cricket
+  'https://images.unsplash.com/photo-1505672678657-cc7037095e2c?w=800&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&auto=format&fit=crop&q=60',
+  // Basketball
+  'https://images.unsplash.com/photo-1519864600265-abb23847ef2c?w=800&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&auto=format&fit=crop&q=60',
+  // Volleyball
+  'https://images.unsplash.com/photo-1509228468518-c5eeecbff44a?w=800&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&auto=format&fit=crop&q=60',
+  // Table Tennis
+  'https://images.unsplash.com/photo-1519864600265-abb23847ef2c?w=800&auto=format&fit=crop&q=60',
+  // Turf/General
+  'https://images.unsplash.com/photo-1464983953574-0892a716854b?w=800&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1505843275257-8491bfa3b61c?w=800&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1518098268026-4e89f1a2cd8e?w=800&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1505672678657-cc7037095e2c?w=800&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1464983953574-0892a716854b?w=800&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1519864600265-abb23847ef2c?w=800&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1509228468518-c5eeecbff44a?w=800&auto=format&fit=crop&q=60',
+];
+
+function getRandom(arr, n = 1) {
+  const shuffled = arr.slice().sort(() => 0.5 - Math.random());
+  return n === 1 ? shuffled[0] : shuffled.slice(0, n);
+}
+
+for (let i = 7; i <= 106; i++) {
+  const sport = getRandom(sports);
+  const city = getRandom(cities);
+  const name = `${city} ${sport.charAt(0).toUpperCase() + sport.slice(1)} Arena #${i}`;
+  staticVenues.push({
+    id: String(i),
+    name,
+    description: `A top-notch ${sport} venue in ${city} with excellent facilities and great atmosphere. Venue number ${i}.`,
+    city,
+    sport,
+    price: Math.floor(Math.random() * 1000) + 400,
+    rating: (Math.random() * 1.5 + 3.5).toFixed(1),
+    images: getRandom(images, 2),
+    facilities: getRandom(facilitiesList, 4),
+    address: `${Math.floor(Math.random() * 1000) + 1} ${city} Sports Road, ${city} - ${100000 + i}`,
+    contact: {
+      phone: `+91 98${Math.floor(Math.random() * 100000000)}`,
+      email: `${sport}${i}@example.com`
+    },
+    openingHours: {
+      Monday: '6:00 AM - 10:00 PM',
+      Tuesday: '6:00 AM - 10:00 PM',
+      Wednesday: '6:00 AM - 10:00 PM',
+      Thursday: '6:00 AM - 10:00 PM',
+      Friday: '6:00 AM - 10:00 PM',
+      Saturday: '6:00 AM - 10:00 PM',
+      Sunday: '6:00 AM - 10:00 PM'
+    },
+    owner: String((i % 3) + 1)
+  });
+}
+
 // --- STATIC VENUE ENDPOINTS ---
 
 // Get all venues

@@ -321,7 +321,7 @@ const Home = () => {
 
       {/* Featured Venues/Courts Section */}
       <section className={`py-8 sm:py-12 px-4 ${styles.featured_venues}`}>
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 text-center mb-8 sm:mb-12">Featured Venues</h2>
+        {/* <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 text-center mb-8 sm:mb-12">Featured Venues</h2> */}
         {loading ? (
           <div className="flex justify-center items-center py-8">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
