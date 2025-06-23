@@ -1,8 +1,8 @@
-.venue_grid :global(.css-1ip8o7n-MuiPaper-root-MuiCard-root)
+.featured_venues .venue_grid :global(.MuiCard-root)
 { max-width: 420px !important;}
 
 
-:global(.css-1gsv261 ){ border-bottom: 0px solid !important; }
+.sport_categories :global(.MuiBox-root ){ border-bottom: 0px solid !important; }
 
 .heroSection {
   display: flex;
@@ -300,7 +300,7 @@
   z-index: 1;
 }
 
-.sport_categories :global(.css-xwzqfk-MuiTabs-root .MuiTabs-indicator) {
+.sport_categories :global(.MuiTabs-root .MuiTabs-indicator) {
   background-color: transparent;
   height: 0px;
   display: none;
