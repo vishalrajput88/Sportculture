@@ -54,29 +54,32 @@ const Home = () => {
 
   const categories = [
     {
-      name: 'Pickleball',
-      icon: pickleballIcon
-    },
-    {
       name: 'Tennis',
       icon: tennisIcon
+    },
+    {
+      name: 'Badminton',
+      icon: badmintonIcon
     },
     {
       name: 'Table Tennis',
       icon: tableTennisIcon
     },
     {
-      name: 'Basketball',
-      icon: basketballIcon
+      name: 'Pickleball',
+      icon: pickleballIcon
     },
-    {
-      name: 'Volleyball',
-      icon: volleyballIcon
-    },
-    {
-      name: 'Badminton',
-      icon: badmintonIcon
-    },
+   
+   
+    // {
+    //   name: 'Basketball',
+    //   icon: basketballIcon
+    // },
+    // {
+    //   name: 'Volleyball',
+    //   icon: volleyballIcon
+    // },
+   
   ];
 
   useEffect(() => {
@@ -244,12 +247,13 @@ const Home = () => {
         <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8 sm:mb-12">
-            <h1 className={styles.heroTitle}>
-              Book Your Perfect Turf
+            <h1 className={`${styles.heroTitle} mb-5`}>
+              {/* Book Your Perfect Turf */}
+              “Need of the hour” I “Join the revolution”
             </h1>
-            <p className={styles.heroDescription}>
+            {/* <p className={styles.heroDescription}>
               Reserve your favorite sports venue in just a few clicks — fast, easy, and reliable.
-            </p>
+            </p> */}
           </div>
 
           <FilterSection onSearch={handleSearch} />
@@ -347,7 +351,8 @@ const Home = () => {
         <div className='container'>
           <div className='text-center'>
             <p className={styles.sub_heading}>
-              SportsCulture Easy Spot Booking
+              {/* SportsCulture Easy Spot Booking */}
+              Get ready to play
             </p>
             <h2 className={styles.easy_sec_ti}>Easy 4 steps to book your venue</h2>
           </div>
@@ -376,7 +381,7 @@ const Home = () => {
                 <div className={styles.easy_img}>
                   <img src={volleyimage} alt="Calendar" />
                 </div>
-                <h3 className={styles.easy_title}>Choose Academy</h3>
+                <h3 className={styles.easy_title}>Choose Venue</h3>
                 <p className={styles.easy_des}>Get list of academy and court and choose as per your convenience</p>
               </div>
               </div>

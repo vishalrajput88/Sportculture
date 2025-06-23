@@ -28,9 +28,9 @@ const Footer = () => {
           <Col md={2} sm={6} className="mb-4 mb-md-0">
             <h5 className="mb-3">Company</h5>
             <ul className="list-unstyled">
-              <li><a href="#about" className="text-muted text-decoration-none">About</a></li>
+              <li><a href="#about" className="text-muted text-decoration-none">About Us</a></li>
               <li><a href="#games" className="text-muted text-decoration-none">Games</a></li>
-              <li><a href="#sctc" className="text-muted text-decoration-none">SC T&C</a></li>
+              <li><a href="#sctc" className="text-muted text-decoration-none">T & C</a></li>
             </ul>
           </Col>
 

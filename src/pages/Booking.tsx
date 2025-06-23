@@ -82,7 +82,8 @@ const Booking = () => {
           </div>
         </div>
         <div className={styles.popupPaymentInfo}>
-          <p className={styles.popupPaymentLabel}>PAY FOR BOOK</p>
+          {/* <p className={styles.popupPaymentLabel}>PAY FOR BOOK</p> */}
+          <p className={styles.popupPaymentLabel}>Payable Amount</p>
           <p className={styles.popupPrice}>INR {venue.price * duration}</p>
         </div>
         <button className={styles.bookButton} onClick={() => navigate(`/payment/${id}`)}>PAY NOW & BOOK SLOT</button>

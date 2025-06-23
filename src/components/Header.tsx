@@ -51,10 +51,10 @@ const Header = () => {
     <header className="w-full">
       {/* Top Banner */}
       <div className={styles.top_banner}>
-        <div className={styles['culture-container']}>
-          <span className="flex-shrink-0">Book your slot at nearest location - 30% OFF using SAVE30</span>
+        <div className='text-center w-100'>
+          {/* <span className="flex-shrink-0">Book your slot at nearest location - 30% OFF using SAVE30</span> */}
           <span className="flex-shrink-0">Book 1st Slot and Get Coupon for 2nd Slot</span>
-          <span className="flex-shrink-0">Book your slot at nearest location - 30% OFF using SAVE30</span>
+          {/* <span className="flex-shrink-0">Book your slot at nearest location - 30% OFF using SAVE30</span> */}
         </div>
       </div>
 
