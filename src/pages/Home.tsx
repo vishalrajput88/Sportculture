@@ -13,8 +13,8 @@ import {
 import pickleballIcon from '../assets/Pickleball.png';
 import tennisIcon from '../assets/Tennis.png';
 import tableTennisIcon from '../assets/Table Tennis.png';
-import basketballIcon from '../assets/Basketball.png';
-import volleyballIcon from '../assets/Volleyball.png';
+// import basketballIcon from '../assets/Basketball.png';
+// import volleyballIcon from '../assets/Volleyball.png';
 import badmintonIcon from '../assets/Badminton.png';
 import heroBackground from '../assets/hero-section-back-img.png';
 import FilterSection from '../components/FilterSection';
