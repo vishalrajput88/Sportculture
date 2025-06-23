@@ -1,40 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styles from './About.module.css';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/pagination';
+// import { Swiper, SwiperSlide } from 'swiper/react';
+// import { Autoplay, Pagination } from 'swiper/modules';
+// import 'swiper/css';
+// import 'swiper/css/pagination';
 import { motion } from 'framer-motion';
 
 declare module "slick-carousel/slick/slick.css";
 declare module "slick-carousel/slick/slick-theme.css";
-
-const teamMembers = [
-  {
-    name: 'Jane Doe',
-    role: 'Founder & CEO',
-    desc: 'Visionary leader with a passion for sports and technology.',
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500'
-  },
-  {
-    name: 'John Smith',
-    role: 'Head of Operations',
-    desc: 'Expert in operations and logistics, ensuring everything runs smoothly.',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500'
-  },
-  {
-    name: 'Emily Jones',
-    role: 'Lead Developer',
-    desc: 'Full stack developer passionate about building scalable web apps.',
-    image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=500'
-  },
-  {
-    name: 'Michael Brown',
-    role: 'Marketing Director',
-    desc: 'Creative marketing strategist with a love for sports and branding.',
-    image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500'
-  }
-];
 
 const About = () => {
   const [ctaEmail, setCtaEmail] = useState('');
@@ -140,7 +113,7 @@ Our platform is not just about games — it's about creating accessible, inclusi
                 aria-label="Subscribe"
                 style={{ position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)' }}
               >
-               <i class="fa-solid fa-paper-plane"></i>
+               <i className="fa-solid fa-paper-plane"></i>
               </button>
             )}
           </form>

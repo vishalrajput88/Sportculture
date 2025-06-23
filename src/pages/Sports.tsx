@@ -2,7 +2,6 @@ import { useState } from 'react';
 import {
   Box,
   Typography,
-  Grid,
   Card,
   CardContent,
   CardMedia,
@@ -85,7 +84,7 @@ const sportsCategories = [
 const Sports = () => {
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_: any, newValue: number) => {
     setSelectedTab(newValue);
   };
 
@@ -105,32 +104,30 @@ const Sports = () => {
 
       {sportsCategories.map((category, index) => (
         <TabPanel key={index} value={selectedTab} index={index}>
-          <Grid container spacing={3}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
             {category.news.map((item, newsIndex) => (
-              <Grid item xs={12} md={6} key={newsIndex}>
-                <Card>
-                  <CardMedia
-                    component="img"
-                    height="200"
-                    image={item.image}
-                    alt={item.title}
-                  />
-                  <CardContent>
-                    <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-                      <Chip label={category.name} color="primary" />
-                      <Chip label="Latest" color="secondary" />
-                    </Stack>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {item.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {item.description}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
+              <Card key={newsIndex}>
+                <CardMedia
+                  component="img"
+                  height="200"
+                  image={item.image}
+                  alt={item.title}
+                />
+                <CardContent>
+                  <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+                    <Chip label={category.name} color="primary" />
+                    <Chip label="Latest" color="secondary" />
+                  </Stack>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    {item.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {item.description}
+                  </Typography>
+                </CardContent>
+              </Card>
             ))}
-          </Grid>
+          </Box>
         </TabPanel>
       ))}
     </Box>

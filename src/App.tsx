@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -21,7 +21,6 @@ import Booking from './pages/Booking';
 import Payment from './pages/Payment';
 import AdminLogin from './pages/AdminLogin';
 import AdminSignup from './pages/AdminSignup';
-import AdminDashboard from './pages/AdminDashboard';
 import CustomerLogin from './pages/CustomerLogin';
 import CustomerSignup from './pages/CustomerSignup';
 import Footer from './components/Footer';
@@ -59,7 +58,6 @@ function App() {
               <Route path="/payment/:id" element={<Payment />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin/signup" element={<AdminSignup />} />
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/login" element={<CustomerLogin />} />
               <Route path="/signup" element={<CustomerSignup />} />
               <Route path="/list-your-ground" element={<ListYourGround />} />

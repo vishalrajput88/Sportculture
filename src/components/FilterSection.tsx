@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -206,7 +206,6 @@ const FilterSection: React.FC<FilterSectionProps> = ({ onSearch }) => {
               textField: {
                 variant: 'standard',
                 fullWidth: true,
-                disableUnderline: true,
                 InputLabelProps: {
                   disabled: !selectedCity,
                   sx: {
@@ -264,7 +263,6 @@ const FilterSection: React.FC<FilterSectionProps> = ({ onSearch }) => {
               textField: {
                 variant: 'standard',
                 fullWidth: true,
-                disableUnderline: true,
                 InputLabelProps: {
                   disabled: !selectedDate,
                   sx: {

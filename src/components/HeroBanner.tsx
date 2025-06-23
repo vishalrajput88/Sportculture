@@ -19,10 +19,10 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
-import { turfApi } from '../services/api';
+// import { turfApi } from '../services/api';
 import type { SearchParams } from '../services/api';
 
-const HeroContainer = styled(Box)(({ theme }) => ({
+const HeroContainer = styled(Box)(() => ({
   backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/turf-background.jpg")',
   backgroundSize: 'cover',
   backgroundPosition: 'center',

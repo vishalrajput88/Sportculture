@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import cultureLogo from '../assets/our-parter-img01.png';
 import reactLogo from '../assets/our-parter-img02.png';
 import buildings from '../assets/our-parter-img03.png';

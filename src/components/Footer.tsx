@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Ensure Bootstrap CSS is available
 import { Container, Row, Col } from 'react-bootstrap';
 import cultureLogo from '../assets/culture-logo.png'; // Assuming you have a logo

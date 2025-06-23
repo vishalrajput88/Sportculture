@@ -16,10 +16,6 @@ const Header = () => {
     return localStorage.getItem('customerToken') !== null || localStorage.getItem('adminToken') !== null;
   });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [adminData, setAdminData] = useState(() => {
-    const data = localStorage.getItem('adminData');
-    return data ? JSON.parse(data) : null;
-  });
 
   const handleMobileMenuToggle = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -37,9 +33,7 @@ const Header = () => {
     localStorage.removeItem('customerToken');
     localStorage.removeItem('customerData');
     localStorage.removeItem('adminToken');
-    localStorage.removeItem('adminData');
     setIsLoggedIn(false);
-    setAdminData(null);
     handleClose();
     navigate('/');
   };
@@ -93,11 +87,6 @@ const Header = () => {
             
             {isLoggedIn ? (
               <>
-                {adminData && adminData.role === 'superadmin' && (
-                  <Link to="/admin/dashboard" className="text-[#6a1b9a] hover:text-purple-800 md:block font-semibold text-base">
-                    Admin Dashboard
-                  </Link>
-                )}
                 <IconButton
                   size="large"
                   aria-label="account of current user"
@@ -200,11 +189,6 @@ const Header = () => {
                   </>
                 ) : (
                   <>
-                    {adminData && adminData.role === 'superadmin' && (
-                      <Link to="/admin/dashboard" className="block w-full text-[#6a1b9a] hover:text-purple-800 text-lg font-medium py-2 text-center" onClick={handleMobileMenuToggle}>
-                        Admin Dashboard
-                      </Link>
-                    )}
                     <Link to="/list-your-ground" className="block w-full mt-2 bg-[#F1A501] text-white px-5 py-3 rounded-[40px] font-semibold text-base text-center hover:bg-[#d18e00] transition-colors" onClick={handleMobileMenuToggle}>
                       List Your Ground
                     </Link>

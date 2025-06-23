@@ -5,10 +5,10 @@ import { Tabs, Tab, Box } from '@mui/material';
 import {
   Card,
   CardMedia,
-  CardContent,
-  Typography,
-  Rating,
-  Chip,
+  // CardContent,
+  // Typography,
+  // Rating,
+  // Chip,
 } from '@mui/material';
 import pickleballIcon from '../assets/Pickleball.png';
 import tennisIcon from '../assets/Tennis.png';
@@ -24,11 +24,11 @@ import buildingimage from '../assets/buildings.png';
 import tenisimage from '../assets/tablet-tenis.png';
 import volleyimage from '../assets/volleyball-home.png';
 import subsendimg from '../assets/sub-send-img.png';
-import eyeicon from '../assets/eye-icon.svg';
+// import eyeicon from '../assets/eye-icon.svg';
 import LogoSlider from '../components/LogoSlider';
-import sectionbackimage from '../assets/easy_section_back.png';
-import listimage from '../assets/Become-Partner-img.png';
-import { turfApi } from '../services/api';
+// import sectionbackimage from '../assets/easy_section_back.png';
+// import listimage from '../assets/Become-Partner-img.png';
+// import { turfApi } from '../services/api';
 
 
 interface Venue {
@@ -48,10 +48,6 @@ interface Venue {
 const Home = () => {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState(0);
-  const [selectedSport, setSelectedSport] = useState('pickleball');
-  const [selectedCity, setSelectedCity] = useState('all');
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [selectedTime, setSelectedTime] = useState<Date | null>(null);
   const [venues, setVenues] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -120,12 +116,11 @@ const Home = () => {
     fetchInitialVenues();
   }, []);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveCategory(newValue);
     const sportName = categories[newValue].name.toLowerCase();
     // Convert space to hyphen for table tennis
     const selectedSport = sportName === 'table tennis' ? 'table-tennis' : sportName;
-    setSelectedSport(selectedSport);
 
     // Immediately fetch venues with the new sport filter
     const fetchVenues = async () => {
@@ -230,7 +225,7 @@ const Home = () => {
           <p className={styles.venue_location}>{venue.city}</p>
           <div className={styles.venue_actions}>
             <button className={styles.view_details_btn} onClick={handleViewDetails}>
-            <i class='fa-solid fa-eye'></i> View Details
+            <i className='fa-solid fa-eye'></i> View Details
             
             </button>
             <button className={styles.book_now_btn}>

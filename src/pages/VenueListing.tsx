@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import styles from './VenueListing.module.css';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Container,
   Typography,
@@ -38,7 +37,6 @@ interface Venue {
 
 const VenueListing = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
   
   const [venues, setVenues] = useState<Venue[]>([]);
@@ -87,12 +85,6 @@ const VenueListing = () => {
   };
 
   const VenueCard = ({ venue }: { venue: Venue }) => {
-    const navigate = useNavigate();
-
-    const handleViewDetails = () => {
-      navigate(`/venues/${venue.id}`);
-    };
-
     return (
       <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
         <CardMedia
@@ -126,7 +118,6 @@ const VenueListing = () => {
             variant="contained"
             color="primary"
             fullWidth
-            onClick={handleViewDetails}
           >
             View Details
           </Button>

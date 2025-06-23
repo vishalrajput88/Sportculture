@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
   Container,
-  Grid,
   Card,
   CardContent,
   CardMedia,
@@ -66,54 +65,52 @@ const SearchResults = () => {
       <Typography variant="h4" component="h1" gutterBottom>
         Search Results
       </Typography>
-      <Grid container spacing={3}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }, gap: 3 }}>
         {results.map((turf) => (
-          <Grid item key={turf.id} xs={12} sm={6} md={4}>
-            <Card>
-              <CardMedia
-                component="img"
-                height="200"
-                image={turf.images[0]}
-                alt={turf.name}
-              />
-              <CardContent>
-                <Typography variant="h6" component="h2" gutterBottom>
-                  {turf.name}
+          <Card key={turf.id}>
+            <CardMedia
+              component="img"
+              height="200"
+              image={turf.images[0]}
+              alt={turf.name}
+            />
+            <CardContent>
+              <Typography variant="h6" component="h2" gutterBottom>
+                {turf.name}
+              </Typography>
+              <Box display="flex" alignItems="center" mb={1}>
+                <Rating value={turf.rating} precision={0.5} readOnly />
+                <Typography variant="body2" color="text.secondary" ml={1}>
+                  ({turf.rating})
                 </Typography>
-                <Box display="flex" alignItems="center" mb={1}>
-                  <Rating value={turf.rating} precision={0.5} readOnly />
-                  <Typography variant="body2" color="text.secondary" ml={1}>
-                    ({turf.rating})
-                  </Typography>
-                </Box>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {turf.city}
-                </Typography>
-                <Typography variant="h6" color="primary" gutterBottom>
-                  ₹{turf.price}/hour
-                </Typography>
-                <Box mb={2}>
-                  {turf.facilities.map((facility) => (
-                    <Chip
-                      key={facility}
-                      label={facility}
-                      size="small"
-                      sx={{ mr: 0.5, mb: 0.5 }}
-                    />
-                  ))}
-                </Box>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={() => window.location.href = `/turf/${turf.id}`}
-                >
-                  View Details
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
+              </Box>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                {turf.city}
+              </Typography>
+              <Typography variant="h6" color="primary" gutterBottom>
+                ₹{turf.price}/hour
+              </Typography>
+              <Box mb={2}>
+                {turf.facilities.map((facility) => (
+                  <Chip
+                    key={facility}
+                    label={facility}
+                    size="small"
+                    sx={{ mr: 0.5, mb: 0.5 }}
+                  />
+                ))}
+              </Box>
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={() => window.location.href = `/turf/${turf.id}`}
+              >
+                View Details
+              </Button>
+            </CardContent>
+          </Card>
         ))}
-      </Grid>
+      </Box>
     </Container>
   );
 };

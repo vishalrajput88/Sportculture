@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Container,
   Card,
@@ -15,7 +15,6 @@ import {
   CircularProgress,
   Alert,
 } from '@mui/material';
-import Grid from '@mui/material/Grid';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -24,7 +23,6 @@ import { turfApi, type Turf, type SearchParams } from '../services/api';
 import styles from './TurfList.module.css';
 
 const TurfList = () => {
-  const navigate = useNavigate();
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedSport, setSelectedSport] = useState('');
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
@@ -82,8 +80,8 @@ const TurfList = () => {
     <Container maxWidth="lg" className={styles.container}>
       {/* Filter Bar */}
       <Box className={styles.filterBar}>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} md={4}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr 1fr' }, gap: 2 }}>
+          <Box>
             <FormControl fullWidth>
               <InputLabel>City</InputLabel>
               <Select
@@ -98,8 +96,8 @@ const TurfList = () => {
                 ))}
               </Select>
             </FormControl>
-          </Grid>
-          <Grid item xs={12} md={4}>
+          </Box>
+          <Box>
             <FormControl fullWidth>
               <InputLabel>Sport</InputLabel>
               <Select
@@ -114,8 +112,8 @@ const TurfList = () => {
                 ))}
               </Select>
             </FormControl>
-          </Grid>
-          <Grid item xs={12} md={4}>
+          </Box>
+          <Box>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Date"
@@ -124,8 +122,8 @@ const TurfList = () => {
                 sx={{ width: '100%' }}
               />
             </LocalizationProvider>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       </Box>
 
       {/* Loading State */}
@@ -150,48 +148,46 @@ const TurfList = () => {
       )}
 
       {/* Turf Cards */}
-      <Grid container spacing={3} sx={{ mt: 2 }}>
+      <Box className={styles.turfCards}>
         {turfs.map((turf) => (
-          <Grid item key={turf.id} xs={12} sm={6} md={4}>
-            <Card className={styles.turfCard}>
-              <CardMedia
-                component="img"
-                height="200"
-                image={turf.images[0]}
-                alt={turf.name}
-                className={styles.cardImage}
-              />
-              <CardContent>
-                <Typography variant="h6" component="h2" gutterBottom>
-                  {turf.name}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {turf.city}
-                </Typography>
-                <Typography variant="h6" color="primary" gutterBottom>
-                  ₹{turf.price}/hour
-                </Typography>
-                <Box className={styles.facilities}>
-                  {turf.facilities.map((facility) => (
-                    <span key={facility} className={styles.facilityChip}>
-                      {facility}
-                    </span>
-                  ))}
-                </Box>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  component={Link}
-                  to={`/turf/${turf.id}`}
-                  className={styles.viewDetailsButton}
-                >
-                  View Details
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
+          <Card key={turf.id} className={styles.turfCard}>
+            <CardMedia
+              component="img"
+              height="200"
+              image={turf.images[0]}
+              alt={turf.name}
+              className={styles.cardImage}
+            />
+            <CardContent>
+              <Typography variant="h6" component="h2" gutterBottom>
+                {turf.name}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                {turf.city}
+              </Typography>
+              <Typography variant="h6" color="primary" gutterBottom>
+                ₹{turf.price}/hour
+              </Typography>
+              <Box className={styles.facilities}>
+                {turf.facilities.map((facility) => (
+                  <span key={facility} className={styles.facilityChip}>
+                    {facility}
+                  </span>
+                ))}
+              </Box>
+              <Button
+                variant="contained"
+                fullWidth
+                component={Link}
+                to={`/turf/${turf.id}`}
+                className={styles.viewDetailsButton}
+              >
+                View Details
+              </Button>
+            </CardContent>
+          </Card>
         ))}
-      </Grid>
+      </Box>
     </Container>
   );
 };
