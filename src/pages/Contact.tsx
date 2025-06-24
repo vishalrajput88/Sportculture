@@ -30,7 +30,7 @@ const Contact = () => {
       <header className={styles.header}>
         <h1 className={styles.title}>Get in Touch</h1>
         <p className={styles.subtitle}>
-          We’d love to hear from you. Whether you have a question about features, trials, or anything else, our team is ready to answer all your questions.
+        We love to hear from you. If you want to know about our work or just get in touch, we are sportingly willing to respond.
         </p>
       </header>
       <main className={styles.contentLayout}>
