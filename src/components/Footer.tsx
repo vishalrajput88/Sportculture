@@ -10,7 +10,7 @@ import twiticon from  '../assets/social-twit.png';
 
 const Footer = () => {
   return (
-    <footer className="bg-light py-5 mt-auto" style={{ backgroundColor: '#f8f9fa' }}>
+    <footer className="bg-light py-5 mt-auto" style={{ backgroundColor: '#f8f9fa', position: 'relative' , zIndex: '2' }}>
       <Container>
         <Row>
           {/* Column 1: Logo and Description */}

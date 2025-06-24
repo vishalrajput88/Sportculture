@@ -73,7 +73,7 @@ const Header = () => {
             <Link to="/about" className="hover:text-[#6a1b9a]">About us</Link>
             <Link to="/courts" className="hover:text-[#6a1b9a]">Venues</Link>
             <Link to="/games" className="hover:text-[#6a1b9a]">Sports</Link>
-            <Link to="/volunteer" className="hover:text-[#6a1b9a]">Volunteer</Link>
+            <Link to="/volunteer" className="hover:text-[#6a1b9a]">Join Us</Link>
             <Link to="/blogs" className="hover:text-[#6a1b9a]">Blogs</Link>
             <Link to="/contact" className="hover:text-[#6a1b9a]">Contact</Link>
             <Link to="/login" className="hover:text-[#6a1b9a]"> Login </Link>
@@ -127,7 +127,7 @@ const Header = () => {
                   Login
                 </Link> */}
                 <Link to="/list-your-ground" className="bg-[#fff] border-[#F1A501] border-1 text-[#000] px-5 py-2 rounded-[40px] font-semibold text-base no-underline">
-                  List Your Ground
+                JOIN AS VENUE
                 </Link>
               </div>
             )}
@@ -161,7 +161,10 @@ const Header = () => {
               {/* Location Selector */}
               <div className="mb-6">
                 <select className="w-full bg-gray-100 p-3 rounded-lg border-0 text-gray-700 text-sm">
-                  <option>Ahmadabad</option>
+                  <option>AHMEDABAD</option>
+                  <option>INDORE</option>
+                  <option>VADODARA</option>
+                  <option>SURAT</option>
                   {/* Add more locations as needed */}
                 </select>
               </div>

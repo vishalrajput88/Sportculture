@@ -25,23 +25,19 @@ const FilterSection: React.FC<FilterSectionProps> = ({ onSearch }) => {
   const [loading, setLoading] = useState(false);
 
   const categories = [
-    'Pickleball',
-    'Tennis',
-    'Table Tennis',
-    'Basketball',
-    'Volleyball',
-    'Badminton',
+    // 'Pickleball',
+    'TENNIS',
+    'BADMINTON',
+    'TABLE TENNIS',
+    'PICKLEBALL',
+    // 'Badminton',
   ];
 
   const cities = [
-    'Ahmedabad',
-    'Mumbai',
-    'Delhi',
-    'Bangalore',
-    'Chennai',
-    'Hyderabad',
-    'Kolkata',
-    'Pune',
+    'AHMEDABAD',
+    'INDORE',
+    'VADODARA',
+    'SURAT',
   ];
 
   const handleSearch = async () => {
@@ -54,7 +50,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({ onSearch }) => {
       const searchParams = {
         city: selectedCity,
         sport: selectedSport,
-        date: selectedDate.format('YYYY-MM-DD'),
+        date: selectedDate.format('DD-MM-YYYY'),
         time: selectedTime.format('HH:mm'),
       };
 
@@ -202,6 +198,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({ onSearch }) => {
             value={selectedDate}
             onChange={(newValue) => setSelectedDate(newValue)}
             disabled={!selectedCity}
+            format="DD-MM-YYYY"
             slotProps={{
               textField: {
                 variant: 'standard',
@@ -259,6 +256,8 @@ const FilterSection: React.FC<FilterSectionProps> = ({ onSearch }) => {
             value={selectedTime}
             onChange={(newValue) => setSelectedTime(newValue)}
             disabled={!selectedDate}
+            views={['hours']}
+            format="HH"
             slotProps={{
               textField: {
                 variant: 'standard',

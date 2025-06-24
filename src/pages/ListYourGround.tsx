@@ -43,7 +43,8 @@ const ListYourGround: React.FC = () => {
   return (
     <div className={styles.listGroundBg}>
       <div className={styles.formContainer}>
-        <h2 className={styles.title}>Quick List Your Ground</h2>
+        {/* <h2 className={styles.title}>Quick List Your Ground</h2> */}
+        <h2 className={styles.title}>Quick JOIN AS VENUE</h2>
         <p className={styles.subtitle}>
           Please fill details below to list your venue on Sports Culture Platform.<br />
           Our executive will call & confirm time availability information.

@@ -247,16 +247,20 @@ const Home = () => {
         <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8 sm:mb-12">
-            <h1 className={`${styles.heroTitle} mb-5`}>
+            <h1 className={`${styles.heroTitle} mb-`}>
               {/* Book Your Perfect Turf */}
               “Need of the hour” I “Join the revolution”
             </h1>
-            {/* <p className={styles.heroDescription}>
-              Reserve your favorite sports venue in just a few clicks — fast, easy, and reliable.
-            </p> */}
+            <p className={`${styles.heroDescription} mb-5 text-center`}>
+            NEED OF THE HOUR
+            </p>
           </div>
 
           <FilterSection onSearch={handleSearch} />
+
+          <p className={`${styles.heroDescription} mt-5 text-center`}>
+          JOIN THE REVOLUTION
+            </p>
         </div>
       </section>
 
