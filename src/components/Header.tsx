@@ -83,7 +83,10 @@ const Header = () => {
           {/* Desktop Right Section: Location and Login */}
           <div className="d-flex align-items-center gap-3">
             <select className="bg-gray-100 p-2 rounded-md border-0 text-gray-700 text-sm">
-              <option>Ahmadabad</option>
+              <option>AHMEDABAD</option>
+              <option>INDORE</option>
+              <option>VADODARA</option>
+              <option>SURAT</option>
               {/* Add more locations as needed */}
             </select>
             

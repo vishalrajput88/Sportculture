@@ -60,7 +60,7 @@ const CustomerLogin = () => {
     <Container maxWidth="sm" sx={{ mt: 8 }}>
       <Paper elevation={3} sx={{ p: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
-          Customer Login
+           Login
         </Typography>
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>

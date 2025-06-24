@@ -3,15 +3,16 @@ import styles from './Games.module.css';
 
 const games = [
   {
-    name: 'Badminton',
-    icon: '🏸',
-    desc: 'A fast-paced racquet sport played on a rectangular court. Great for agility and fun!'
-  },
-  {
     name: 'Tennis',
     icon: '🎾',
     desc: 'Classic court game for all ages. Test your skills and stamina in singles or doubles.'
   },
+  {
+    name: 'Badminton',
+    icon: '🏸',
+    desc: 'A fast-paced racquet sport played on a rectangular court. Great for agility and fun!'
+  },
+ 
   {
     name: 'Table Tennis',
     icon: '🏓',
@@ -22,16 +23,16 @@ const games = [
     icon: '🥒',
     desc: 'A blend of tennis, badminton, and ping-pong. Easy to learn, hard to master!'
   },
-  {
-    name: 'Volleyball',
-    icon: '🏐',
-    desc: 'Team up and spike! Enjoy this energetic sport on sand or court.'
-  },
-  {
-    name: 'Basketball',
-    icon: '🏀',
-    desc: 'Dribble, shoot, score! Fast breaks and teamwork make this a crowd favorite.'
-  }
+  // {
+  //   name: 'Volleyball',
+  //   icon: '🏐',
+  //   desc: 'Team up and spike! Enjoy this energetic sport on sand or court.'
+  // },
+  // {
+  //   name: 'Basketball',
+  //   icon: '🏀',
+  //   desc: 'Dribble, shoot, score! Fast breaks and teamwork make this a crowd favorite.'
+  // }
 ];
 
 const Games = () => {
@@ -55,12 +56,12 @@ const Games = () => {
 
   return (
     <div className={styles.pageContainer}>
-      <header className={styles.header}>
+      {/* <header className={styles.header}>
         <h1 className={styles.title}>Games</h1>
         <p className={styles.subtitle}>
           Explore our collection of sports and games—each with its own magic, just like a Ghibli adventure.
         </p>
-      </header>
+      </header> */}
       <div className={styles.gamesGrid}>
         {games.map((game, idx) => (
           <div

@@ -15,10 +15,12 @@ const amenitiesList = [
 ];
 
 const sportsIcons = [
-  { label: 'Pickleball', icon: '🏓' },
   { label: 'Tennis', icon: '🎾' },
-  { label: 'Table Tennis', icon: '🏓' },
   { label: 'Badminton', icon: '🏸' },
+  { label: 'Table Tennis', icon: '🏓' },
+  { label: 'Pickleball', icon: '🏓' },
+  
+  
 ];
 
 const venuesNearby = [
