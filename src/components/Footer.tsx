@@ -7,7 +7,7 @@ import appstore from  '../assets/app-store.png';
 import facebookicon from  '../assets/social-fac.png'; 
 import instaicon from  '../assets/social-insta.png'; 
 import twiticon from  '../assets/social-twit.png'; 
-import FilterSection from './FilterSection';
+// import FilterSection from './FilterSection';
 import { motion } from 'framer-motion';
 import styles from './Footer.module.css';
 
