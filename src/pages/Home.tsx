@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
 import { Tabs, Tab, Box } from '@mui/material';
@@ -26,10 +26,10 @@ import volleyimage from '../assets/volleyball-home.png';
 import subsendimg from '../assets/sub-send-img.png';
 // import eyeicon from '../assets/eye-icon.svg';
 import LogoSlider from '../components/LogoSlider';
+import { motion } from 'framer-motion';
 // import sectionbackimage from '../assets/easy_section_back.png';
 // import listimage from '../assets/Become-Partner-img.png';
 // import { turfApi } from '../services/api';
-
 
 interface Venue {
   id: number;
@@ -81,6 +81,25 @@ const Home = () => {
     // },
    
   ];
+
+  // Add typewriter effect for hero heading
+  const fullHeading = '“Need of the hour” I “Join the revolution”';
+  const [typedIndex, setTypedIndex] = useState(0);
+
+  useEffect(() => {
+    setTypedIndex(0);
+    const interval = setInterval(() => {
+      setTypedIndex(prev => {
+        if (prev < fullHeading.length) {
+          return prev + 1;
+        } else {
+          clearInterval(interval);
+          return prev;
+        }
+      });
+    }, 40);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const fetchInitialVenues = async () => {
@@ -247,9 +266,42 @@ const Home = () => {
         <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8 sm:mb-12">
-            <h1 className={`${styles.heroTitle} mb-`}>
-              {/* Book Your Perfect Turf */}
-              “Need of the hour” I “Join the revolution”
+            <h1 className={`${styles.heroTitle} `} style={{ letterSpacing: 2 }}>
+              {fullHeading.split('').map((char, i) => (
+                <motion.span
+                  key={i}
+                  initial={{ opacity: 0, color: '#f1a501', textShadow: '0 0 16px #f1a501, 0 0 32px #f1a501' }}
+                  animate={i < typedIndex ? {
+                    opacity: [0, 1, 1],
+                    color: ['#f1a501', '#fff', '#fff'],
+                    textShadow: [
+                      '0 0 16px #f1a501, 0 0 32px #f1a501',
+                      '0 0 8px #fff',
+                      'none'
+                    ],
+                    scale: i === typedIndex - 1 ? [1.3, 1] : 1,
+                  } : {
+                    opacity: 0,
+                    color: '#f1a501',
+                    textShadow: '0 0 16px #f1a501, 0 0 32px #f1a501',
+                    scale: 1
+                  }}
+                  transition={{
+                    opacity: { duration: 0.5, delay: i * 0.04 },
+                    color: { duration: 0.5, delay: i * 0.04 + 0.2 },
+                    textShadow: { duration: 0.5, delay: i * 0.04 + 0.2 },
+                    scale: { duration: 0.18 }
+                  }}
+                  style={{
+                    display: 'inline-block',
+                    fontFamily: 'monospace',
+                    fontWeight: 700,
+                    fontSize: 'inherit'
+                  }}
+                >
+                  {char === ' ' ? '\u00A0' : char}
+                </motion.span>
+              ))}
             </h1>
             <p className={`${styles.heroDescription} mb-5 text-center`}>
             NEED OF THE HOUR
