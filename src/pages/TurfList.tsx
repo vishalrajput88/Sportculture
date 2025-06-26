@@ -32,13 +32,9 @@ const TurfList = () => {
 
   const cities = [
     'Ahmedabad',
-    'Mumbai',
-    'Delhi',
-    'Bangalore',
-    'Chennai',
-    'Hyderabad',
-    'Kolkata',
-    'Pune',
+    'Indore',
+    'Vadodara',
+    'Surat',
   ];
 
   const sports = [

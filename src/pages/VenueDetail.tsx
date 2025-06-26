@@ -34,7 +34,7 @@ const venuesNearby = [
 ];
 
 const VenueDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { venuename } = useParams<{ venuename: string }>();
   const navigate = useNavigate();
   const [venue, setVenue] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -45,8 +45,8 @@ const VenueDetail = () => {
     const fetchVenueDetails = async () => {
       try {
         setLoading(true);
-        if (!id) throw new Error('Venue ID is required');
-        const response = await fetch(`http://localhost:3000/api/turfs/${id}`);
+        if (!venuename) throw new Error('Venue name is required');
+        const response = await fetch(`http://localhost:3000/api/turfs/by-name/${venuename}`);
         if (!response.ok) throw new Error(`Failed to fetch venue details: ${response.statusText}`);
         const data = await response.json();
         setVenue(data);
@@ -58,7 +58,7 @@ const VenueDetail = () => {
       }
     };
     fetchVenueDetails();
-  }, [id]);
+  }, [venuename]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
@@ -138,9 +138,9 @@ const VenueDetail = () => {
             </div>
            
           </div>
-          <button className={styles.bookButton} onClick={() => navigate(`/booking/${id}`)}>
-              Book Your Slot Now
-            </button>
+          <button className={styles.bookButton} onClick={() => navigate(`/booking/${venuename}`)}>
+            Book Your Slot Now
+          </button>
           <div className={styles.sidebarCard}>
             <h4 className={styles.sportsTitle}>Sports Available</h4>
             <div className={styles.sportsList}>

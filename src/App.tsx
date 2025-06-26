@@ -53,9 +53,9 @@ function App() {
               <Route path="/search-results" element={<SearchResults />} />
               <Route path="/turfs" element={<TurfList />} />
               <Route path="/venues" element={<VenueListing />} />
-              <Route path="/venues/:id" element={<VenueDetail />} />
-              <Route path="/booking/:id" element={<Booking />} />
-              <Route path="/payment/:id" element={<Payment />} />
+              <Route path="/venues/:venuename" element={<VenueDetail />} />
+              <Route path="/booking/:venuename" element={<Booking />} />
+              <Route path="/payment/:venuename" element={<Payment />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin/signup" element={<AdminSignup />} />
               <Route path="/login" element={<CustomerLogin />} />

@@ -49,7 +49,7 @@ const VenueListing = () => {
   const [selectedTime, setSelectedTime] = useState<dayjs.Dayjs | null>(dayjs(searchParams.get('time') || undefined));
   
   const sports = ['all', 'badminton', 'volleyball', 'basketball', 'table-tennis', 'tennis', 'pickleball'];
-  const cities = ['Ahmedabad', 'Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Hyderabad', 'Kolkata', 'Pune'];
+  const cities = ['Ahmedabad', 'Indore', 'Vadodara', 'Surat'];
 
   useEffect(() => {
     fetchVenues();

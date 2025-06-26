@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import styles from './Home.module.css';
 import { Tabs, Tab, Box } from '@mui/material';
 import {
@@ -27,6 +27,7 @@ import subsendimg from '../assets/sub-send-img.png';
 // import eyeicon from '../assets/eye-icon.svg';
 import LogoSlider from '../components/LogoSlider';
 import { motion } from 'framer-motion';
+import slugify from 'slugify';
 // import sectionbackimage from '../assets/easy_section_back.png';
 // import listimage from '../assets/Become-Partner-img.png';
 // import { turfApi } from '../services/api';
@@ -43,6 +44,7 @@ interface Venue {
   facilities: string[];
   location: { lat: number; lng: number };
   address: string;
+  slug: string;
 }
 
 const Home = () => {
@@ -51,6 +53,7 @@ const Home = () => {
   const [venues, setVenues] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { venuename } = useParams();
 
   const categories = [
     {
@@ -83,7 +86,7 @@ const Home = () => {
   ];
 
   // Add typewriter effect for hero heading
-  const fullHeading = '“Need of the hour” I “Join the revolution”';
+  const fullHeading = '“Need of the hour” | “Join the revolution”';
   const [typedIndex, setTypedIndex] = useState(0);
 
   useEffect(() => {
@@ -210,7 +213,7 @@ const Home = () => {
     };
 
     const handleViewDetails = () => {
-      navigate(`/venues/${venue.id}`);
+      navigate(`/venues/${slugify(venue.name, { lower: true })}`);
     };
 
     const fallbackImage = "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&auto=format&fit=crop&q=60";
@@ -258,6 +261,12 @@ const Home = () => {
       </Card>
     );
   };
+
+  useEffect(() => {
+    fetch(`http://localhost:3000/api/turfs/by-name/${venuename}`)
+      .then(res => res.json())
+      .then(data => setVenue(data));
+  }, [venuename]);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
