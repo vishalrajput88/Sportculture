@@ -26,9 +26,9 @@ const Volunteer = () => {
   return (
     <div className={styles.pageContainer}>
       <section className={styles.heroSection}>
-        <h1 className={styles.heroTitle}>Become a Volunteer</h1>
+        <h1 className={styles.heroTitle}>Want to Join the Movement?</h1>
         <p className={styles.heroSubtitle}>
-          Join our mission to make sports and culture accessible to everyone. Your passion and time can make a real difference!
+          Let’s Build the Sports Culture Together. Apply Now.
         </p>
       </section>
 
@@ -40,8 +40,25 @@ const Volunteer = () => {
       </section>
 
       <section className={styles.formSection}>
-        <h2 className={styles.infoTitle}>Sign Up</h2>
+        <h2 className={styles.infoTitle}>Join Now</h2>
         <form className={styles.form} onSubmit={handleSubmit}>
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel} htmlFor="interest">Area of Interest</label>
+            <select
+              className={styles.formInput}
+              id="interest"
+              name="interest"
+              value={formData.interest}
+              onChange={handleChange}
+              required
+            >
+              <option value="">-- Select --</option>
+              <option value="event">Event Organization</option>
+              <option value="coaching">Coaching/Training</option>
+              <option value="promotion">Promotion & Outreach</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
           <div className={styles.formGroup}>
             <label className={styles.formLabel} htmlFor="name">Name</label>
             <input
@@ -78,23 +95,7 @@ const Volunteer = () => {
               required
             />
           </div>
-          <div className={styles.formGroup}>
-            <label className={styles.formLabel} htmlFor="interest">Area of Interest</label>
-            <select
-              className={styles.formInput}
-              id="interest"
-              name="interest"
-              value={formData.interest}
-              onChange={handleChange}
-              required
-            >
-              <option value="">-- Select --</option>
-              <option value="event">Event Organization</option>
-              <option value="coaching">Coaching/Training</option>
-              <option value="promotion">Promotion & Outreach</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
+        
           <div className={styles.formGroup}>
             <label className={styles.formLabel} htmlFor="message">Message</label>
             <textarea
