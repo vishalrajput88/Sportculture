@@ -31,6 +31,7 @@ import Games from './pages/Games';
 import BackToTop from './components/BackToTop';
 import ListYourGround from './pages/ListYourGround';
 import Profile from './pages/Profile';
+import BookingList from './pages/BookingList';
 
 function App() {
   return (
@@ -63,6 +64,7 @@ function App() {
               <Route path="/signup" element={<CustomerSignup />} />
               <Route path="/list-your-ground" element={<ListYourGround />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/my-bookings" element={<BookingList />} />
             </Routes>
           </div>
           <BackToTop />
