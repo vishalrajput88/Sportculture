@@ -1,8 +1,0 @@
-# API & Project Configuration
-VITE_API_URL=http://localhost:3000/api
-VITE_ENV=development
-
-
-# Security & Database
-JWT_SECRET=T6LPUm2Ws8Roc+UY5L4q7r0nLSce2Tdr9iLB3wU2qbc=
-MONGODB_URI=mongodb://localhost:27017/sports_culture

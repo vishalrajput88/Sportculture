@@ -30,6 +30,7 @@ import Volunteer from './pages/Volunteer';
 import Games from './pages/Games';
 import BackToTop from './components/BackToTop';
 import ListYourGround from './pages/ListYourGround';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -61,6 +62,7 @@ function App() {
               <Route path="/login" element={<CustomerLogin />} />
               <Route path="/signup" element={<CustomerSignup />} />
               <Route path="/list-your-ground" element={<ListYourGround />} />
+              <Route path="/profile" element={<Profile />} />
             </Routes>
           </div>
           <BackToTop />

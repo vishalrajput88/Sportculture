@@ -1,140 +1,3 @@
-const express = require('express');
-const cors = require('cors');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const path = require('path');
-require('dotenv').config();
-const connectDB = require('./config/db');
-const User = require('./models/User');
-const Venue = require('./models/Venue');
-const Booking = require('./models/Booking');
-
-const app = express();
-const port = process.env.PORT || 3000;
-
-// Connect to MongoDB
-connectDB();
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// Middleware to verify JWT token
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({ message: 'No token provided' });
-  }
-
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) {
-      return res.status(403).json({ message: 'Invalid token' });
-    }
-    req.user = user;
-    next();
-  });
-};
-
-// Middleware to check if user is super admin
-const isSuperAdmin = async (req, res, next) => {
-  try {
-    const user = await User.findById(req.user.id);
-    if (!user || user.role !== 'super_admin') {
-      return res.status(403).json({ message: 'Access denied. Super admin only.' });
-    }
-    next();
-  } catch (error) {
-    res.status(500).json({ message: 'Server error' });
-  }
-};
-
-// User signup endpoint
-app.post('/api/users/signup', async (req, res) => {
-  // --- STATIC RESPONSE ---
-  // const { name, email, password, phone, role } = req.body;
-  // const existingUser = await User.findOne({ email });
-  // if (existingUser) {
-  //   return res.status(400).json({ message: 'Email already registered' });
-  // }
-  // const user = new User({ name, email, password, phone, role: role || 'customer' });
-  // await user.save();
-  // res.status(201).json({ message: 'User created successfully' });
-  res.status(201).json({ message: 'User created successfully (static)' });
-});
-
-// User login endpoint
-app.post('/api/users/login', async (req, res) => {
-  // --- STATIC RESPONSE ---
-  // const { email, password } = req.body;
-  // console.log('Login attempt with:', { email, password });
-  // const user = await User.findOne({ email });
-  // if (!user) {
-  //   return res.status(401).json({ message: 'Invalid credentials' });
-  // }
-  // const isMatch = await user.comparePassword(password);
-  // if (!isMatch) {
-  //   return res.status(401).json({ message: 'Invalid credentials' });
-  // }
-  // const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '24h' });
-  // const { password: _, ...userData } = user.toObject();
-  // res.json({ token, user: userData });
-
-    const { email, password } = req.body;
-  // Hardcoded admin user
-  if (
-    (email === 'admin@example.com' && password === 'admin123') ||
-    (email === 'superadmin@example.com' && password === 'admin123')
-  ) {
-    const user = {
-      _id: '1',
-      name: email === 'admin@example.com' ? 'Admin User' : 'Super Admin',
-      email,
-      role: email === 'admin@example.com' ? 'admin' : 'super_admin',
-      phone: email === 'admin@example.com' ? '9876543210' : '1234567890',
-    };
-    const token = jwt.sign(
-      { id: user._id, email: user.email, role: user.role },
-      process.env.JWT_SECRET || 'staticsecret',
-      { expiresIn: '24h' }
-    );
-    res.json({ token, user });
-  } else {
-    res.status(401).json({ message: 'Invalid credentials (static)' });
-  }
-});
-
-// Get all users (super admin only)
-app.get('/api/users', authenticateToken, isSuperAdmin, async (req, res) => {
-  try {
-    const users = await User.find().select('-password');
-    res.json(users);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching users' });
-  }
-});
-
-// Update user role (super admin only)
-app.put('/api/users/:userId/role', authenticateToken, isSuperAdmin, async (req, res) => {
-  try {
-    const { role } = req.body;
-    const user = await User.findByIdAndUpdate(
-      req.params.userId,
-      { role },
-      { new: true }
-    ).select('-password');
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating user role' });
-  }
-});
-
 // --- STATIC VENUE DATA ---
 const staticVenues = [
   {
@@ -331,6 +194,7 @@ function getRandom(arr, n = 1) {
   return n === 1 ? shuffled[0] : shuffled.slice(0, n);
 }
 
+// Generate additional venues
 for (let i = 7; i <= 106; i++) {
   const sport = getRandom(sports);
   const city = getRandom(cities);
@@ -363,178 +227,25 @@ for (let i = 7; i <= 106; i++) {
   });
 }
 
-// --- STATIC VENUE ENDPOINTS ---
-
-// Get all venues
-app.get('/api/venues', (req, res) => {
-  res.json(staticVenues);
-});
-
-// Get venue by ID
-app.get('/api/venues/:id', (req, res) => {
-  const venue = staticVenues.find(v => v.id === req.params.id);
-  if (!venue) {
-    return res.status(404).json({ message: 'Venue not found (static)' });
-  }
-  res.json(venue);
-});
-
-// Create venue
-app.post('/api/venues', (req, res) => {
-  res.status(201).json({ message: 'Venue created successfully (static)' });
-});
-
-// Update venue
-app.put('/api/venues/:id', (req, res) => {
-  res.json({ message: 'Venue updated successfully (static)' });
-});
-
-// Delete venue
-app.delete('/api/venues/:id', (req, res) => {
-  res.json({ message: 'Venue deleted successfully (static)' });
-});
-
-// Booking endpoints
-app.post('/api/bookings', authenticateToken, async (req, res) => {
-  try {
-    const { venueId, date, startTime, endTime } = req.body;
-
-    // Check if venue exists
-    const venue = await Venue.findById(venueId);
-    if (!venue) {
-    return res.status(404).json({ message: 'Venue not found' });
+class StaticDataService {
+  static getAllVenues() {
+    return staticVenues;
   }
 
-    // Check if the time slot is available
-    const existingBooking = await Booking.findOne({
-      venue: venueId,
-      date,
-      startTime,
-      endTime,
-      status: { $in: ['pending', 'confirmed'] }
-    });
+  static getVenueById(id) {
+    return staticVenues.find(v => v.id === id);
+  }
 
-    if (existingBooking) {
-      return res.status(400).json({ message: 'This time slot is already booked' });
+  static searchVenues(sport, city) {
+    let results = staticVenues;
+    if (sport) {
+      results = results.filter(v => v.sport.toLowerCase().includes(String(sport).toLowerCase()));
     }
-
-    // Calculate total price (you can implement your own pricing logic)
-    const totalPrice = venue.price;
-
-    // Create booking
-    const booking = new Booking({
-      venue: venueId,
-      user: req.user.id,
-      date,
-      startTime,
-      endTime,
-      totalPrice
-    });
-
-    await booking.save();
-
-    res.status(201).json(booking);
-  } catch (error) {
-    res.status(500).json({ message: 'Error creating booking' });
-  }
-});
-
-app.get('/api/bookings', authenticateToken, async (req, res) => {
-  try {
-    const bookings = await Booking.find({ user: req.user.id })
-      .populate('venue', 'name city sport price')
-      .sort({ date: -1, startTime: -1 });
-    res.json(bookings);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching bookings' });
-  }
-});
-
-app.get('/api/bookings/:id', authenticateToken, async (req, res) => {
-  try {
-    const booking = await Booking.findById(req.params.id)
-      .populate('venue', 'name city sport price')
-      .populate('user', 'name email phone');
-
-    if (!booking) {
-      return res.status(404).json({ message: 'Booking not found' });
+    if (city) {
+      results = results.filter(v => v.city.toLowerCase().includes(String(city).toLowerCase()));
     }
-
-    // Check if user is authorized to view this booking
-    if (booking.user._id.toString() !== req.user.id) {
-      const user = await User.findById(req.user.id);
-      if (user.role !== 'admin' && user.role !== 'super_admin') {
-        return res.status(403).json({ message: 'Not authorized' });
-      }
-    }
-
-    res.json(booking);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching booking' });
+    return results;
   }
-});
+}
 
-app.put('/api/bookings/:id/status', authenticateToken, async (req, res) => {
-  try {
-    const { status } = req.body;
-    const booking = await Booking.findById(req.params.id);
-
-    if (!booking) {
-      return res.status(404).json({ message: 'Booking not found' });
-    }
-
-    // Check if user is authorized to update this booking
-    const user = await User.findById(req.user.id);
-    if (booking.user.toString() !== req.user.id && user.role !== 'admin' && user.role !== 'super_admin') {
-      return res.status(403).json({ message: 'Not authorized' });
-    }
-
-    booking.status = status;
-    await booking.save();
-
-    res.json(booking);
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating booking status' });
-  }
-});
-
-// Serve static files from the public directory (moved to the end)
-app.use(express.static(path.join(__dirname, '../public')));
-
-// Root API endpoint
-app.get('/api', (req, res) => {
-  res.json({ message: 'Turf Booking API is running' });
-});
-
-// Search turfs endpoint
-app.get('/api/turfs/search', (req, res) => {
-  const { sport, city } = req.query;
-  let results = staticVenues;
-  if (sport) {
-    results = results.filter(v => v.sport.toLowerCase().includes(String(sport).toLowerCase()));
-  }
-  if (city) {
-    results = results.filter(v => v.city.toLowerCase().includes(String(city).toLowerCase()));
-  }
-  res.json(results);
-});
-
-// Get turf by ID endpoint
-app.get('/api/turfs/:id', (req, res) => {
-  const venue = staticVenues.find(v => v.id === req.params.id);
-  if (!venue) {
-    return res.status(404).json({ message: 'Turf not found (static)' });
-  }
-  res.json(venue);
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
-});
-
-// Start the server
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-}); 
+module.exports = StaticDataService; 

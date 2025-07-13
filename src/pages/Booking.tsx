@@ -11,6 +11,9 @@ const Booking = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [duration, setDuration] = useState(1);
   const [showPopup, setShowPopup] = useState(false);
+  const [grounds, setGrounds] = useState<any[]>([]);
+  const [selectedGround, setSelectedGround] = useState<string>("");
+  const [courts, setCourts] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchVenueDetails = async () => {
@@ -31,6 +34,12 @@ const Booking = () => {
     fetchVenueDetails();
   }, [id]);
 
+  useEffect(() => {
+    fetch("http://localhost:5000/api/grounds/with-courts") // apne backend ka URL daalein
+      .then(res => res.json())
+      .then(data => setGrounds(data));
+  }, []);
+
   const handleDurationChange = (amount: number) => {
     setDuration((prev) => Math.max(1, prev + amount));
   };
@@ -38,6 +47,13 @@ const Booking = () => {
   const handleBookingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setShowPopup(true);
+  };
+
+  const handleGroundChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const groundId = e.target.value;
+    setSelectedGround(groundId);
+    const ground = grounds.find(g => g._id === groundId);
+    setCourts(ground ? ground.courts : []);
   };
 
   if (loading) return <p>Loading...</p>;
@@ -128,9 +144,29 @@ const Booking = () => {
               </div>
             </div>
             <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Ground</label>
+              <select
+                className={styles.formInput}
+                value={selectedGround}
+                onChange={handleGroundChange}
+              >
+                <option value="">--Select Ground--</option>
+                {grounds.map(ground => (
+                  <option key={ground._id} value={ground._id}>
+                    {ground.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.formGroup}>
               <label className={styles.formLabel}>Court</label>
               <select className={styles.formInput}>
                 <option>--Select Court--</option>
+                {courts.map(court => (
+                  <option key={court._id} value={court._id}>
+                    {court.name}
+                  </option>
+                ))}
               </select>
             </div>
             <button type="submit" className={styles.bookButton}>Book Your Slot Now</button>
